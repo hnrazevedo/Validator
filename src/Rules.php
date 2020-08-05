@@ -33,7 +33,7 @@ Class Rules{
 	    return $this;
   	}
 
-    public function getRules(string $action): array
+    public function getRules(string $action): ?array
     {
 		return (array_key_exists($action, $this->form)) ? $this->form[$action] : null;
 	}
