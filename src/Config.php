@@ -1,5 +1,5 @@
 <?php
 
 define("VALIDATOR_CONFIG", [
-    "path" => "validators"
+    "path" => "/validations/"
 ]);
