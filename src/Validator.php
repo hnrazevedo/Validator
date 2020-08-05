@@ -9,7 +9,7 @@ Class Validator{
     
     private static array $validators = array();
 
-    public static function add(object $model,object $return): void
+    public static function add(object $model,callable $return): void
     {
         self::$validators[get_class($model)] = $return($Rules = new Rules($model));
 	}
