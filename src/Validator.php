@@ -179,10 +179,12 @@ Class Validator{
     public static function toJson(array $request): string
     {
         $file = (VALIDATOR_CONFIG['path'].ucfirst($request['provider']).'.php');
+        $file = __DIR__.'/../../../../'.$file;
 
         if(file_exists($file)){
             require_once($file);
         }
+
 
         $class = 'HnrAzevedo\\Validator\\'.ucfirst($request['provider']);
 
@@ -203,8 +205,7 @@ Class Validator{
 		$validators = self::$validators[get_class($model)]->getRules($request['role']);
 
         /* For function to validate information in javascript */
-        //$response = 'validate(document.querySelector(\'form[provider="'.$request['provider'].'"][role="'.$request['role'].'"]\'),{';
-        $response = '[\'form[provider="'.$request['provider'].'"][role="'.$request['role'].'"]\',{';
+        $response = '{';
 		foreach ($validators as $field => $rules) {
 			$response .= $field.':{';
 			foreach(array_reverse($rules) as $rule => $value){
@@ -217,7 +218,8 @@ Class Validator{
 			}
 			$response .='},';
         }
-        //return str_replace(',}','}',$response.'});');
-		return str_replace(',}','}',$response.'}];');
+
+        $response = substr(str_replace(',}','}',$response),0,-1).'}';
+		return $response;
 	}
 }
