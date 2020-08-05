@@ -89,13 +89,23 @@ Class Validator{
             
 		foreach ($validators as $key => $value) {
 		    $tests = (array_key_exists('required',$value) and $value['required']===true) ? $tests+1 : $tests;
-		}
+        }
 
-		$testeds = 0;
+		$testeds = self::validate($validators);
+            
+		if($tests > $testeds){
+            throw new Exception('Alguma informação necessária não pode ser validada.');
+        }
+				
+		return true;
+    }
+    
+    public static function validate(array $validators): int
+    {
+        $validate = 0;
+        foreach ($validators as $key => $value) {
 
-		foreach ($validators as $key => $value) {
-
-			foreach ($data as $keyy => $valuee) {
+			foreach (json_decode(self::$data['data']) as $keyy => $valuee) {
 
                 $v = $valuee;
                     
@@ -114,7 +124,7 @@ Class Validator{
 
 				if($keyy===$key){
 
-                    $testeds++;
+                    $validate++;
                         
 					foreach ($value as $subkey => $subvalue) {
 
@@ -142,7 +152,7 @@ Class Validator{
                                                 if(count($date) != 3){
                                                     throw new Exception('Data inválida.',1);
                                                 }
-                                                if(!@checkdate(intval($date[1]), intval($date[0]), intval($date[2]) )){
+                                                if(! checkdate( intval($date[1]), intval($date[0]), intval($date[2]) )){
                                                     throw new Exception('Data inválida.',1);
                                                 }
                                                 break;
@@ -173,11 +183,12 @@ Class Validator{
 
 							case 'equals':
                                 $equals = false;
-                                foreach ($data as $ke => $sub) {
+                                foreach (self::$data as $ke => $sub) {
                                     if($ke===$subvalue){
                                         $equals=true;
-                                        if($valuee !== $sub)
-                                            throw new \Exception(ucfirst($key).' está diferente de '.ucfirst($ke),1);
+                                        if($valuee !== $sub){
+                                            throw new Exception(ucfirst($key).' está diferente de '.ucfirst($ke),1);
+                                        }
                                     }
                                 }
                                 if(!$equals){
@@ -189,13 +200,8 @@ Class Validator{
 				}
 			}
         }
-            
-		if($tests > $testeds){
-            throw new Exception('Alguma informação necessária não pode ser validada.');
-        }
-				
-		return true;
-	}
+        return $validate;
+    }
 
     public static function toJson(array $request): string
     {
