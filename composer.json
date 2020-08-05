@@ -1,0 +1,20 @@
+{
+    "name": "hnrazevedo/validator",
+    "description": "Tools for developing personal projects",
+    "authors": [
+        {
+            "name": "Henri Mateus Santos de Azevedo",
+            "email": "hnr.azevedo@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "license":"MIT",
+    "autoload": {
+        "psr-4": {
+            "HnrAzevedo\\Validator\\":"src/"
+        }
+    }
+}
