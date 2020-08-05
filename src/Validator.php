@@ -16,8 +16,6 @@ Class Validator{
 
     public static function execute(array $datas): bool
     {
-		$field_error = null;
-
 		if(!array_key_exists('data', $datas)){
             throw new Exception('Informações cruciais não foram recebidas.');
         }
@@ -95,8 +93,6 @@ Class Validator{
                         
 					foreach ($value as $subkey => $subvalue) {
 
-						$field_error = $key;
-
 						switch ($subkey) {
 							case 'minlength':
                                 if(array_key_exists('required', $value)){
@@ -121,7 +117,7 @@ Class Validator{
                                                 if(count($date) != 3){
                                                     throw new Exception('Data inválida.',1);
                                                 }
-                                                if(!@checkdate($date[1],$date[0],$date[2])){
+                                                if(!@checkdate(intval($date[1]), intval($date[0]), intval($date[2]) )){
                                                     throw new Exception('Data inválida.',1);
                                                 }
                                                 break;
