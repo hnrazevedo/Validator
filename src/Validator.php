@@ -74,8 +74,6 @@ Class Validator{
         self::jsonData();
         self::hasProvider();
         self::hasRole();
-		            
-        $data = (array) json_decode($datas['data']);
             
         self::includeValidations();
 
@@ -204,36 +202,31 @@ Class Validator{
     }
 
     public static function toJson(array $request): string
-    {
+    { 
+        $response = null;
+        
         self::$data['provider'] = $request['provider'];
+        self::$data['role'] = $request['role'];
 
         self::includeValidations();
 
         $rules = self::getClass('HnrAzevedo\\Validator\\'.ucfirst($request['provider']));
-		
-		self::existRole($rules);
-		
-        /* For function to validate information in javascript */
-        $response = '{';
+
+        self::existRole($rules);
+
+        $r = self::$validators[get_class($rules)]->getRules($request['role']);
 
 		foreach ( self::$validators[get_class($rules)]->getRules($request['role'])  as $field => $r) {
-            $response .= $field.':{';
-                
-			foreach(array_reverse($r) as $rule => $value){
-                $value = (gettype($value)==='string') ? '\''.$value.'\'' : $value;
-                
-				if(gettype($value)==='boolean'){
-                    $value = ($value) ? 'true' : 'false';
-                }
-
-                $value = ($rule=='regex') ? str_replace('\\','\\\\','\''.substr($value,2,strlen($value)-4).'\'') : $value;
-                
-				$response .= $rule.':'.$value.',';
-            }
             
-			$response .='},';
+            $response .= ("{$field}:".json_encode(array_reverse($r))).',';
+            
         }
 
-		return substr(str_replace(',}','}',$response),0,-1).'}';
+        $response = '{'.substr($response,0,-1).'}';
+        $response = str_replace(',"',',',$response);
+        $response = str_replace('{"','',$response);
+        $response = str_replace('":',':',$response);
+
+		return $response;
 	}
 }
