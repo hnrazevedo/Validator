@@ -65,14 +65,19 @@ Class Validator{
         }
     }
 
-    public static function execute(array $datas): bool
+    public static function checkDatas()
     {
-        self::$data = $datas;
-
 		self::existData();
         self::jsonData();
         self::hasProvider();
         self::hasRole();
+    }
+
+    public static function execute(array $datas): bool
+    {
+        self::$data = $datas;
+
+        self::checkDatas();
             
         self::includeValidations();
 
@@ -109,10 +114,20 @@ Class Validator{
 
 					foreach ($value as $subkey => $subvalue) {
                         $function = "check_{$subkey}";
+
+                        self::testMethod($function);
+
                         self::$function($keyy,$subvalue);
 					}
 				}
 			}
+        }
+    }
+
+    public static function testMethod($method)
+    {
+        if(!method_exists(static::class, $method)){
+            throw new Exception("{$method} não é uma validação válida.");
         }
     }
 

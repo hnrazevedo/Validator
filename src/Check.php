@@ -39,7 +39,7 @@ Trait Check{
 
             foreach($realval as $val){
 
-                if(!@preg_match(self::$validators[self::$model]->getRules(self::$data['role'])[$param]['regex'], $val)){
+                if(!preg_match(self::$validators[self::$model]->getRules(self::$data['role'])[$param]['regex'], $val)){
                     throw new Exception("{$param} inválido(a).",1);
                 }  
 
@@ -109,20 +109,32 @@ Trait Check{
     protected static function check_type(string $param, $value)
     {
         if(self::toNext($param,$value)){
-            /*
-            var_dump($value);
-                    switch ($value) {
-                        case 'date':
-                            $date = explode('/', $valuee);
-                            if(count($date) != 3){
-                                throw new Exception('Data inválida.',1);
-                            }
-                            if(! checkdate( intval($date[1]), intval($date[0]), intval($date[2]) )){
-                                throw new Exception('Data inválida.',1);
-                            }
-                            break;
-                    }*/
+
+            switch ($value) {
+                case 'date':
+                    if(!self::validateDate(json_decode(self::$data['data'])->$param , 'd/m/Y')){
+                        throw new Exception("{$param} não é uma data válida.");
+                    }
+                    break;
+            }
         }       
+    }
+
+    protected static function check_filter(string $param, $value)
+    {
+        if(self::toNext($param,$value)){
+
+            if(!filter_var(json_decode(self::$data['data'])->$param, $value)){
+                throw new Exception("{$param} não passou pela filtragem de dados.");
+            }
+
+        }
+    }
+
+    public static function validateDate($date, $format = 'Y-m-d H:i:s')
+    {
+        $d = \DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
     }
 
     protected static function check_required(string $param): bool

@@ -16,7 +16,8 @@ try{
             'password2' => 123456,
             'phones' => [
                 '949164770','949164771','949164772'
-            ]
+            ],
+            'birth' => '28/09/1996' 
         ]),
         'provider' => 'user',
         'role' => 'login'
@@ -27,7 +28,6 @@ try{
 
     /* Transforms validation to Json format to be validated on the client if desired */
     $json = Validator::toJson($data);
-
 
 }catch(Exception $er){
 
