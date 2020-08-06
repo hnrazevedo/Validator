@@ -204,7 +204,7 @@ Class Validator{
     public static function toJson(array $request): string
     { 
         $response = null;
-        
+
         self::$data['provider'] = $request['provider'];
         self::$data['role'] = $request['role'];
 
@@ -213,8 +213,6 @@ Class Validator{
         $rules = self::getClass('HnrAzevedo\\Validator\\'.ucfirst($request['provider']));
 
         self::existRole($rules);
-
-        $r = self::$validators[get_class($rules)]->getRules($request['role']);
 
 		foreach ( self::$validators[get_class($rules)]->getRules($request['role'])  as $field => $r) {
             
