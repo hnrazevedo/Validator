@@ -79,25 +79,22 @@ Class Validator{
         self::$model = get_class(self::getClass('HnrAzevedo\\Validator\\'.ucfirst(self::$data['provider'])));
 
 		self::existRole(self::$model);
-
-        $tests = 0;
             
 		foreach ( (self::$validators[self::$model]->getRules($datas['role'])) as $key => $value) {
-		    $tests = (@$value['required'] === true ) ? $tests+1 : $tests;
+            if(@$value['required'] === true){
+                self::$required[$key] = $value;
+            }
         }
 
-		$testeds = self::validate();
-            
-		if($tests > $testeds){
-            throw new Exception('Alguma informação necessária não pode ser validada.');
-        }
+        self::validate();
+        
+        self::check_requireds();
 				
 		return true;
     }
     
-    public static function validate(): int
+    public static function validate()
     {
-        $validate = 0;
         foreach ( (self::$validators[self::$model]->getRules(self::$data['role'])) as $key => $value) {
 
 			foreach (json_decode(self::$data['data']) as $keyy => $valuee) {
@@ -108,7 +105,7 @@ Class Validator{
 
 				if($keyy===$key){
 
-                    $validate++;
+                    unset(self::$required[$key]);
 
 					foreach ($value as $subkey => $subvalue) {
                         $function = "check_{$subkey}";
@@ -117,7 +114,6 @@ Class Validator{
 				}
 			}
         }
-        return $validate;
     }
 
     public static function toJson(array $request): string

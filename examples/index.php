@@ -13,7 +13,10 @@ try{
         'data' => json_encode([
             'email'=> 'hnr.azevedo@gmail.com',
             'password' => 123456,
-            'password2' => 123456
+            'password2' => 123456,
+            'phones' => [
+                '949164770','949164771','949164772'
+            ]
         ]),
         'provider' => 'user',
         'role' => 'login'
