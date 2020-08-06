@@ -102,17 +102,6 @@ Class Validator{
 
 			foreach (json_decode(self::$data['data']) as $keyy => $valuee) {
 
-                $v = $valuee;
-                    
-				if(is_array($valuee)){
-					$v = null;
-					foreach ($valuee as $vvv) {
-						$v .= $vvv;
-					}
-                }
-                    
-				$valuee = $v;
-
 				if(!array_key_exists($keyy, (self::$validators[self::$model]->getRules(self::$data['role'])) )){
                     throw new Exception("O campo '{$keyy}' não é esperado para está operação.");
                 }
