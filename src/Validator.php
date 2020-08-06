@@ -8,7 +8,7 @@ use Exception;
 Class Validator{
     
     private static array $validators = array();
-    private static ?array $data = null;
+    private static array $data = [];
 
     public static function add(object $model,callable $return): void
     {
@@ -88,7 +88,7 @@ Class Validator{
         $tests = 0;
             
 		foreach ($validators as $key => $value) {
-		    $tests = (array_key_exists('required',$value) and $value['required']===true) ? $tests+1 : $tests;
+		    $tests = (@$value['required'] === true ) ? $tests+1 : $tests;
         }
 
 		$testeds = self::validate($validators);
