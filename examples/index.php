@@ -12,7 +12,8 @@ try{
     $data = [
         'data' => json_encode([
             'email'=> 'hnr.azevedo@gmail.com',
-            'password' => 123456
+            'password' => 123456,
+            'password2' => 123456
         ]),
         'provider' => 'user',
         'role' => 'login'
@@ -23,6 +24,7 @@ try{
 
     /* Transforms validation to Json format to be validated on the client if desired */
     $json = Validator::toJson($data);
+
 
 }catch(Exception $er){
 

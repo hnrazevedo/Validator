@@ -6,13 +6,12 @@ use HnrAzevedo\Validator\Rules;
 use Exception;
 
 Class Validator{
-    
-    private static array $validators = array();
-    private static array $data = [];
+    use Check;
 
     public static function add(object $model,callable $return): void
     {
-        self::$validators[get_class($model)] = $return($Rules = new Rules($model));
+        self::$model = get_class($model);
+        self::$validators[self::$model] = $return($Rules = new Rules($model));
     }
     
     private static function existData()
@@ -61,7 +60,7 @@ Class Validator{
 
     private static function existRole($rules)
     {
-        if(empty(self::$validators[get_class($rules)]->getRules(self::$data['role']))){
+        if(empty(self::$validators[$rules]->getRules(self::$data['role']))){
             throw new Exception('Não existe regras para validar este formulário.');
         }
     }
@@ -77,19 +76,17 @@ Class Validator{
             
         self::includeValidations();
 
-        $rules = self::getClass('HnrAzevedo\\Validator\\'.ucfirst(self::$data['provider']));
+        self::$model = get_class(self::getClass('HnrAzevedo\\Validator\\'.ucfirst(self::$data['provider'])));
 
-		self::existRole($rules);
-
-		$validators = self::$validators[get_class($rules)]->getRules($datas['role']);
+		self::existRole(self::$model);
 
         $tests = 0;
             
-		foreach ($validators as $key => $value) {
+		foreach ( (self::$validators[self::$model]->getRules($datas['role'])) as $key => $value) {
 		    $tests = (@$value['required'] === true ) ? $tests+1 : $tests;
         }
 
-		$testeds = self::validate($validators);
+		$testeds = self::validate();
             
 		if($tests > $testeds){
             throw new Exception('Alguma informação necessária não pode ser validada.');
@@ -98,10 +95,10 @@ Class Validator{
 		return true;
     }
     
-    public static function validate(array $validators): int
+    public static function validate(): int
     {
         $validate = 0;
-        foreach ($validators as $key => $value) {
+        foreach ( (self::$validators[self::$model]->getRules(self::$data['role'])) as $key => $value) {
 
 			foreach (json_decode(self::$data['data']) as $keyy => $valuee) {
 
@@ -116,84 +113,17 @@ Class Validator{
                     
 				$valuee = $v;
 
-				if(!array_key_exists($keyy, $validators)){
+				if(!array_key_exists($keyy, (self::$validators[self::$model]->getRules(self::$data['role'])) )){
                     throw new Exception("O campo '{$keyy}' não é esperado para está operação.");
                 }
 
 				if($keyy===$key){
 
                     $validate++;
-                        
+
 					foreach ($value as $subkey => $subvalue) {
-
-						switch ($subkey) {
-							case 'minlength':
-                                if(array_key_exists('required', $value)){
-                                    if($value['required'] or strlen($valuee)!==0){
-                                        if(strlen($valuee)===0){
-                                            throw new Exception("O campo '{$key}' é obrigatório.",1);
-                                        }
-                                         
-                                        if(strlen($valuee) < (int) $subvalue){
-                                            throw new Exception("{$key} não atingiu o mínimo de caracteres esperado.",1);
-                                        }
-                                    }
-                                }
-                                break;
-
-                            case 'type':
-                                if(array_key_exists('required', $value)){
-                                    if($value['required'] or strlen($valuee)!==0){
-                                        switch ($subvalue) {
-                                            case 'date':
-                                                $date = explode('/', $valuee);
-                                                if(count($date) != 3){
-                                                    throw new Exception('Data inválida.',1);
-                                                }
-                                                if(! checkdate( intval($date[1]), intval($date[0]), intval($date[2]) )){
-                                                    throw new Exception('Data inválida.',1);
-                                                }
-                                                break;
-                                        }
-                                    }
-                                }
-    						    break;
-
-							case 'maxlength':
-                                if(array_key_exists('required', $value)){
-                                    if($value['required'] or strlen($valuee)!==0){
-                                        if(strlen($valuee)>(int)$subvalue){
-                                            throw new Exception("{$key} ultrapassou o limite de caracteres permitidos.",1);
-                                        }
-                                    }
-                                }
-                                break;
-
-							case 'regex':
-                                if(array_key_exists('required', $value)){
-                                    if($value['required'] or strlen($valuee)!==0){
-                                        if(!@preg_match($subvalue,$valuee)){
-                                            throw new Exception("{$key} inválido(a).",1);
-                                        }
-                                    }
-                                }
-                                break;
-
-							case 'equals':
-                                $equals = false;
-                                foreach (self::$data as $ke => $sub) {
-                                    if($ke===$subvalue){
-                                        $equals=true;
-                                        if($valuee !== $sub){
-                                            throw new Exception(ucfirst($key).' está diferente de '.ucfirst($ke),1);
-                                        }
-                                    }
-                                }
-                                if(!$equals){
-                                    throw new Exception("O servidor não encontrou a informação '{$subvalue}' para ser comparada a '{$key}'.",1);
-                                }
-                                break;
-	    				}
+                        $function = "check_{$subkey}";
+                        self::$function($keyy,$subvalue);
 					}
 				}
 			}
@@ -210,11 +140,11 @@ Class Validator{
 
         self::includeValidations();
 
-        $rules = self::getClass('HnrAzevedo\\Validator\\'.ucfirst($request['provider']));
+        self::$model = get_class( self::getClass('HnrAzevedo\\Validator\\'.ucfirst($request['provider'])) );
 
-        self::existRole($rules);
+        self::existRole(self::$model);
 
-		foreach ( self::$validators[get_class($rules)]->getRules($request['role'])  as $field => $r) {
+		foreach ( self::$validators[self::$model]->getRules($request['role'])  as $field => $r) {
             
             $response .= ("{$field}:".json_encode(array_reverse($r))).',';
             
