@@ -113,14 +113,9 @@ Class Validator{
                     unset(self::$required[$key]);
 
 					foreach ($value as $subkey => $subvalue) {
-                        try{
-                            $function = "check_{$subkey}";
-                            self::testMethod($function);
-                            self::$function($keyy,$subvalue);
-                        }catch(Exception $exception){
-                            self::$errors[] = $exception->getMessage();
-                        }
-                        
+                        $function = "check_{$subkey}";
+                        self::testMethod($function);
+                        self::$function($keyy,$subvalue);
 					}
 				}
 			}

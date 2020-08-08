@@ -2,8 +2,6 @@
 
 namespace HnrAzevedo\Validator;
 
-use Exception;
-
 Class Rules{
     private string $action;
 
@@ -23,7 +21,7 @@ Class Rules{
     public function addField(string $field, array $test): Rules
     {
 	    if(empty($this->action)){
-            throw new Exception("Form action not registered.");
+            self::$errors[] = "Form action not registered.";
         }
 
 	    if(empty($this->form[$this->action][$field])){
