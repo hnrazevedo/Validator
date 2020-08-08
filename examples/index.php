@@ -20,15 +20,22 @@ $data = [
     'role' => 'login'
 ];
 
-/* Checks whether the passed data is valid for the selected function */
-$valid = Validator::execute($data);
+try{
 
-if(!$valid){
-    foreach(Validator::getErrors() as $err => $message){
-        echo $message . PHP_EOL;
+    /* Checks whether the passed data is valid for the selected function */
+    $valid = Validator::execute($data);
+    
+    if(!$valid){
+        foreach(Validator::getErrors() as $err => $message){
+            echo $message . PHP_EOL;
+        }
     }
+
+    /* Transforms validation to Json format to be validated on the client if desired */
+    $json = Validator::toJson($data);
+
+}catch(Exception $er){
+
+    die("Code Error: {$er->getCode()}, Line: {$er->getLine()}, File: {$er->getFile()}, Message: {$er->getMessage()}.");
+
 }
-
-/* Transforms validation to Json format to be validated on the client if desired */
-$json = Validator::toJson($data);
-

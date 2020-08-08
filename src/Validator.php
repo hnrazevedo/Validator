@@ -91,11 +91,18 @@ Class Validator{
             }
         }
 
+        self::$errors = [];
+
         self::validate();
         
         self::check_requireds();
 				
 		return self::check_errors();
+    }
+
+    public static function check_errors(): bool
+    {
+        return (count(self::$errors) === 0);
     }
     
     public static function validate()

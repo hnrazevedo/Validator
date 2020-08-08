@@ -23,11 +23,6 @@ Trait Check{
         }       
     }
 
-    protected static function check_errors(): bool
-    {
-        return (count(self::$errors) === 0);
-    }
-
     protected static function check_requireds()
     {
         if(count(self::$required) > 0){
