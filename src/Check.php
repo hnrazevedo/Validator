@@ -9,6 +9,7 @@ Trait Check{
     protected static array $validators = [];
     protected static string $model = '';
     protected static array $required = [];
+    protected static array $errors = [];
 
     protected static function check_minlength(string $param, $value)
     {
@@ -24,10 +25,15 @@ Trait Check{
         }       
     }
 
+    protected static function check_errors(): bool
+    {
+        return (count(self::$errors) === 0);
+    }
+
     protected static function check_requireds()
     {
         if(count(self::$required) > 0){
-            throw new Exception('As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::$required)).'.');
+            self::$errors[] = 'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::$required)).'.';
         }
     }
 

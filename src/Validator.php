@@ -95,7 +95,7 @@ Class Validator{
         
         self::check_requireds();
 				
-		return true;
+		return self::check_errors();
     }
     
     public static function validate()
@@ -113,15 +113,23 @@ Class Validator{
                     unset(self::$required[$key]);
 
 					foreach ($value as $subkey => $subvalue) {
-                        $function = "check_{$subkey}";
-
-                        self::testMethod($function);
-
-                        self::$function($keyy,$subvalue);
+                        try{
+                            $function = "check_{$subkey}";
+                            self::testMethod($function);
+                            self::$function($keyy,$subvalue);
+                        }catch(Exception $exception){
+                            self::$errors[] = $exception->getMessage();
+                        }
+                        
 					}
 				}
 			}
         }
+    }
+
+    public static function getErrors(): array
+    {
+        return self::$errors;
     }
 
     public static function testMethod($method)
