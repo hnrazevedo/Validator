@@ -160,11 +160,6 @@ Class Validator{
             
         }
 
-        $response = '{'.substr($response,0,-1).'}';
-        $response = str_replace(',"',',',$response);
-        $response = str_replace('{"','',$response);
-        $response = str_replace('":',':',$response);
-
-		return $response;
+        return '{'.str_replace('"','',substr($response,0,-1)).'}';
 	}
 }

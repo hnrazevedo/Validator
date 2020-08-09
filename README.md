@@ -145,12 +145,12 @@ $json = Validator::toJson($data);
 /**
  * Result:
  * {
- *     email:required:true,filter:274,minlength:1},
- *     password:required:true,maxlength:20,minlength:6},
- *     password2:required:true,equals:"password"},
- *     remember:required:false,maxlength:2,minlength:2},
- *     birth:required:true,type:"date"},
- *     phones:maxlength:9,minlength:8,required:true,maxcount:3,mincount:2}
+ *     email:{required:true,filter:274,minlength:1},
+ *     password:{required:true,maxlength:20,minlength:6},
+ *     password2:{required:true,equals:"password"},
+ *     remember:{required:false,maxlength:2,minlength:2},
+ *     birth:{required:true,type:"date"},
+ *     phones:{maxlength:9,minlength:8,required:true,maxcount:3,mincount:2}
  * }
  */
 ```
