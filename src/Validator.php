@@ -156,9 +156,18 @@ Class Validator{
         self::existRole(self::$model);
 
 		foreach ( self::$validators[self::$model]->getRules($request['role'])  as $field => $r) {
+            $r = self::replaceRegex($r);
             $response .= ("{$field}:".json_encode(array_reverse($r))).',';
         }
 
         return '{'.substr($response,0,-1).'}';
-	}
+    }
+    
+    private static function replaceRegex(array $rules): array
+    {
+        if(array_key_exists('regex',$rules)){ 
+            $rules['regex'] = substr($rules['regex'],1,-2);
+        }
+        return $rules;
+    }
 }
