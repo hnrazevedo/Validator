@@ -52,6 +52,7 @@ Class Validator{
     private static function getClass(string $class)
     {
         if(!class_exists($class)){
+		$class = basename($class);
             throw new Exception("Form ID {$class} inválido.");
         }
 
