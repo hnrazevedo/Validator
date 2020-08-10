@@ -156,11 +156,9 @@ Class Validator{
         self::existRole(self::$model);
 
 		foreach ( self::$validators[self::$model]->getRules($request['role'])  as $field => $r) {
-            
             $response .= ("{$field}:".json_encode(array_reverse($r))).',';
-            
         }
 
-        return '{'.str_replace('"','',substr($response,0,-1)).'}';
+        return '{'.substr($response,0,-1).'}';
 	}
 }
