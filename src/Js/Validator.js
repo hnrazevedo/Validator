@@ -1,10 +1,6 @@
 /*
  * © 2020 Henri Azevedo All Rights Reserved.
  */
-
-/* Está implementado desta forma em uma aplicação minha, irei passar para um uso geral assim que possível */
-/* Tambam subirei assim que possivel examples de sua utilização */
-
 "use strict";
 
 const validate = function(f,options){
@@ -67,8 +63,11 @@ const validate = function(f,options){
 
             switch(rule){
                 case 'required':
-                  if(required && input.value.length===0)
-                      throw new Error(fieldText+' é obrigatório.');
+                  if(required && input.value.length===0){
+                    throw new Error(fieldText+' é obrigatório.');
+                  }
+
+                      
                   break;
                 case 'minlength':
                   if(required || input.value.length>0){
@@ -84,8 +83,11 @@ const validate = function(f,options){
                   break;
                 case 'regex':
                   if(required || input.value.length>0){
-                    if(!(new RegExp(rules[rule].replace(/\(\d*\)|\/\(P\)\//g, ""))).test(input.value))
+                    if(!(new RegExp(rules[rule])).test(input.value)){
+                        console.log(input.value);
+                        console.log(rules[rule]);
                         throw new Error(fieldText+' inválido(a).');
+                    }
                   }
                 break;
                 case 'equals':
@@ -113,9 +115,9 @@ document.addEventListener('DOMContentLoaded',function(e){
                 (async () => {
                     const rawResponse = await fetch('/validator', {
                         method: 'POST',
-                        headers: {
-                          'X-Requested-With': 'XMLHttpRequest'
-                        },
+                        //headers: {
+                        //  'X-Requested-With': 'XMLHttpRequest'
+                        //},
                         body: data
                       });
                       const response = await rawResponse.json();
@@ -128,7 +130,7 @@ document.addEventListener('DOMContentLoaded',function(e){
             } else {
                 var xhr = new XMLHttpRequest();
                 xhr.open( "POST", '/validator' , true );
-                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                //xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 
                 xhr.addEventListener('load',function(e){
                     if(isJson(xhr.response)){
