@@ -50,12 +50,12 @@ define("VALIDATOR_CONFIG", [
 ]);
 ```
 
-#### errors
+### Errors
 
 #### In case of errors, Validator will throw a Exception.
 Em casos de erros de configuração, o Validator disparara uma Exception.
 
-#### Validation rules
+### Validation rules
 
 #### Available rules
 
@@ -98,7 +98,7 @@ Class User{
 }
 ```
 
-#### Data format for validation
+### Data format for validation
 
 #### The data for validation must be passed to the component as follows
 Os dados para validação devem ser passados ​​para o componente da seguinte forma
@@ -119,7 +119,7 @@ $data = [
 ];
 ```
 
-#### Check data
+### Check data
 
 #### Validation errors are returned in an error array, in case there are more than one occurrence, they can be displayed at the same time
 Os erros de validação são retornados em uma matriz de erro, caso haja mais de uma ocorrência, eles podem ser exibidos ao mesmo tempo
@@ -134,7 +134,7 @@ if(!$valid){
 }
 ```
 
-#### toJson
+### toJson
 
 #### Returns a readable Json for validation to be performed on the client side
 Retorna um Json legível para validação a ser realizada no lado do cliente
