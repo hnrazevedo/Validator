@@ -3,72 +3,71 @@
  */
 "use strict";
 
-const validate = function(form ,options){
-
-    // Validates when trying to submit the form
-    form.addEventListener('submit',function(e){
+const validate = function(f,options){
+    f.addEventListener('submit',function(e){
         e.preventDefault();
 
         var valid = true;
+        var field = null;
 
-        if(form.querySelectorAll('.error') != undefined){
-            form.querySelectorAll('.error').forEach(err => err.classList.remove('error'));
+        if(f.querySelectorAll('.error')!=undefined){
+            f.querySelectorAll('.error').forEach(err => err.classList.remove('error'));
         }
 
         for(var opt in options){
-            input = opt.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+            field = opt.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
 
             try{
-                if(form.querySelector('[name="'+opt+'"]') != undefined){
-                    checkInput(form,form.querySelector('[name="'+opt+'"]'),options[opt]);
+                if(f.querySelector('[name="'+opt+'"]')!=undefined){
+                    checkInput(f,f.querySelector('[name="'+opt+'"]'),options[opt]);
                 }
             }catch(err){
                 valid = false;
-                console.log(err.message);
-                // Report validation errors
+                inputShowMessage(f.querySelector('[name="'+field.toLowerCase()+'"]'),err.message,'error');
             }
         }
 
         if(valid){
-            form.submit();
+            submitter.work(e);
         }
     });
 
-    // Validation when taking focus from the field
-    if(form.querySelectorAll('input:not([type="submit"]),textarea')!=undefined){
+    if(f.querySelectorAll('input:not([type="submit"]),textarea')!=undefined){
+        f.querySelectorAll('input:not([type="submit"]),textarea').forEach(input => input.addEventListener('blur',function(e){
+            input.classList.remove('error');
+            try{
+                checkInput(f,input,options[input.getAttribute('name')]);
+                inputShowMessage(input,'');
+                input.style.marginBottom = '';
+            }catch(err){
+                inputShowMessage(input,err.message,'error');
+            }
+        }));
+    }
 
-        form.querySelectorAll('input:not([type="submit"]),textarea').forEach(
-            input => input.addEventListener('blur',function(e){
-
-                input.classList.remove('error');
-                try{
-                    checkInput(form,input,options[input.getAttribute('name')]);
-                    // Removes error attributes from the field
-                }catch(err){
-                    console.log(err.message);
-                    // Report validation errors
-                }
-
-            })
-        );
-
+    function inputShowMessage(input,text,c=null){
+        var message = input.closest('form').querySelector('p[name="'+input.getAttribute('name')+'"]');
+        if(message != null){
+            message.innerHTML = text;
+            input.classList.add(c);
+            input.style.marginBottom = message.offsetHeight + 2;
+            (c==null) ? message.classList.remove(['error','success']) : message.classList.add(c);
+        }
     }
 
     function checkInput(f,input,rules){
         for(var rule in rules){
-
-            fieldText = input.getAttribute('placeholder');
-
+            var fieldText = input.nextSibling.innerHTML;
+            fieldText = (fieldText===undefined || fieldText.trim().length == 0 ) ? input.getAttribute('placeholder') : fieldText;
             var required = ((typeof rules['required']) === 'boolean') ? rules['required'] : false;
 
             switch(rule){
-
                 case 'required':
                     if(required && input.value.length===0){
                         throw new Error(fieldText+' é obrigatório.');
-                    }
+                    } 
                     break;
-
+                  
                 case 'minlength':
                     if(required || input.value.length>0){
                         if(input.value.length<rules[rule]){
@@ -80,7 +79,7 @@ const validate = function(form ,options){
                 case 'maxlength':
                     if(required || input.value.length>0){
                         if(input.value.length>rules[rule]){
-                            throw new Error(fieldText+' deve ter no mínimo '+rules[rule]['minlength']+' e no máximo '+value+' caracteres.');
+                            throw new Error(fieldText+' deve ter no máximo '+rules[rule]+' caracteres.');
                         }
                     }
                     break;
@@ -96,27 +95,18 @@ const validate = function(form ,options){
                 case 'equals':
                     if(required || input.value.length>0){
                         var clone = f.querySelector('[name="'+rules[rule]+'"]');
-
-                        if(clone === undefined){
-                            throw new Error(clone+' não encontrado para comparação.');
-                        }
-
                         if(input.value!==clone.value){
-                            throw new Error(fieldText+' está diferente de '+clone.getAttribute('placeholder')+'.');
+                            throw new Error(fieldText+' está diferente de '+clone.nextSibling.innerHTML+'.');
                         }
-                            
                     }
                     break;
-
             }
         }
     }
 }
 
-
 document.addEventListener('DOMContentLoaded',function(e){
-    if(document.querySelectorAll('form')!=undefined){
-
+    if(document.querySelectorAll('form[provider]')!=undefined){
         document.querySelectorAll('form[provider]').forEach(function(f,i){
 
             var data = new FormData();
@@ -128,6 +118,9 @@ document.addEventListener('DOMContentLoaded',function(e){
                 (async () => {
                     const rawResponse = await fetch('/validator', {
                         method: 'POST',
+                        headers: {
+                          'Requested-Method': 'ajax'
+                        },
                         body: data
                       });
                       const response = await rawResponse.json();
@@ -140,6 +133,8 @@ document.addEventListener('DOMContentLoaded',function(e){
             } else {
                 var xhr = new XMLHttpRequest();
                 xhr.open( "POST", '/validator' , true );
+                xhr.setRequestHeader("Requested-Method", "ajax");
+
                 xhr.addEventListener('load',function(e){
                     if(isJson(xhr.response)){
                         response = JSON.parse(String(xhr.response));
@@ -152,14 +147,11 @@ document.addEventListener('DOMContentLoaded',function(e){
             }
 
             function formWork(response){
-
                 for(var r in response) {
                     switch(r){
-
                         case 'success':
                             eval(response[r]);
                             break;
-
                         case 'error':
                             f.classList.add('disabled');
                             f.innerHTML = '<div class="panel-message error" style="display:block">'+response[r]+'</div>' + f.innerHTML;
@@ -167,19 +159,8 @@ document.addEventListener('DOMContentLoaded',function(e){
                     }
                 }
             }
-
         });
     }
 });
-
-function isJson(str) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
-}
-
 
 export default validate;
