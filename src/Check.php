@@ -16,6 +16,10 @@ Trait Check{
             $realval = (is_array(json_decode(self::$data['data'])->$param)) ? json_decode(self::$data['data'])->$param : [json_decode(self::$data['data'])->$param];
 
             foreach($realval as $val){
+                if(strlen($val) === 0) {
+                    self::$errors[] = "{$param} é obrigatório.";
+                    continue;
+                }
                 if($value > strlen($val)) {
                     self::$errors[] = "{$param} não atingiu o mínimo de caracteres esperado.";
                 }
