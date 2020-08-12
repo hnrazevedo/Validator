@@ -137,6 +137,9 @@ if(!$valid){
     }
 }
 ```
+### NOTE
+#### In case of configuration error or improper receipt of data, Validator will throw an Exception.
+Em caso de erro de configuração ou de recebimento indevido dos dados o Validator lançara uma Exception.
 
 ### toJson
 
