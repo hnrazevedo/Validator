@@ -17,11 +17,15 @@ Trait Check{
 
             foreach($realval as $val){
                 if(strlen($val) === 0) {
-                    self::$errors[] = "{$param} é obrigatório.";
+                    self::$errors[] = [
+                        $param => 'é obrigatório.'
+                    ];
                     continue;
                 }
                 if($value > strlen($val)) {
-                    self::$errors[] = "{$param} não atingiu o mínimo de caracteres esperado.";
+                    self::$errors[] = [
+                        $param => 'não atingiu o mínimo de caracteres esperado.'
+                    ];
                 }
             }
         }       
@@ -30,7 +34,9 @@ Trait Check{
     protected static function check_requireds()
     {
         if(count(self::$required) > 0){
-            self::$errors[] = 'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::$required)).'.';
+            self::$errors[] = [
+                'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::$required)).'.'
+            ];
         }
     }
 
@@ -43,7 +49,9 @@ Trait Check{
             foreach($realval as $val){
 
                 if(!preg_match(self::$validators[self::$model]->getRules(self::$data['role'])[$param]['regex'], $val)){
-                    self::$errors[] = "{$param} inválido(a).";
+                    self::$errors[] = [
+                        $param => 'inválido(a).'
+                    ];
                 }  
 
             }
@@ -55,7 +63,9 @@ Trait Check{
         if(self::toNext($param,$value)){
             $array = self::testArray($param, json_decode(self::$data['data'])->$param);
             if(count($array) < $value){
-                self::$errors[] = "{$param} não atingiu o mínimo esperado.";
+                self::$errors[] = [
+                    $param => 'não atingiu o mínimo esperado.'
+                ];
             }
         }
     }
@@ -65,7 +75,9 @@ Trait Check{
         if(self::toNext($param,$value)){
             $array = self::testArray($param, json_decode(self::$data['data'])->$param);
             if(count($array) > $value){
-                self::$errors[] = "{$param} ultrapassou o esperado.";
+                self::$errors[] = [
+                    $param => 'ultrapassou o esperado.'
+                ];
             }
         }
     }
@@ -73,7 +85,9 @@ Trait Check{
     protected static function testArray(string $param, $value): ?array
     {
         if(!is_array($value)){
-            self::$errors[] = "Era esperado um informação em array para {$param}.";
+            self::$errors[] = [
+                $param => 'Era esperado um informação em array para está informação.'
+            ];
         }
         return $value;
     }
@@ -83,11 +97,15 @@ Trait Check{
         if(self::toNext($param,$value)){
 
             if(!array_key_exists($param,json_decode(self::$data['data'],true))){
-                self::$errors[] = "O servidor não encontrou a informação '{$value}' para ser comparada a '{$param}'.";
+                self::$errors[] = [
+                    $param => "O servidor não encontrou a informação '{$value}' para ser comparada."
+                ];
             }
             
             if(json_decode(self::$data['data'])->$param != json_decode(self::$data['data'],true)[$value]){
-                self::$errors[] = ucfirst($param).' está diferente de '.ucfirst($value);
+                self::$errors[] = [
+                    $param => 'está diferente de '.ucfirst($value)
+                ];
             }
 
         }       
@@ -102,7 +120,9 @@ Trait Check{
             foreach($realval as $val){
 
                 if($value < strlen($val)) {
-                    self::$errors[] = "{$param} ultrapassou o máximo de caracteres esperado.";
+                    self::$errors[] = [
+                        $param => 'ultrapassou o máximo de caracteres esperado.'
+                    ];
                 }
         
             }
@@ -116,7 +136,9 @@ Trait Check{
             switch ($value) {
                 case 'date':
                     if(!self::validateDate(json_decode(self::$data['data'])->$param , 'd/m/Y')){
-                        self::$errors[] = "{$param} não é uma data válida.";
+                        self::$errors[] = [
+                            $param => 'não é uma data válida.'
+                        ];
                     }
                     break;
             }
@@ -128,7 +150,9 @@ Trait Check{
         if(self::toNext($param,$value)){
 
             if(!filter_var(json_decode(self::$data['data'])->$param, $value)){
-                self::$errors[] = "{$param} não passou pela filtragem de dados.";
+                self::$errors[] = [
+                    $param => 'não passou pela filtragem de dados.'
+                ];
             }
 
         }
