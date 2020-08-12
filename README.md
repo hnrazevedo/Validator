@@ -128,8 +128,12 @@ Os erros de validação são retornados em uma matriz de erro, caso haja mais de
 $valid = Validator::execute($data);
 
 if(!$valid){
+    $errors = [];
     foreach(Validator::getErrors() as $err => $message){
-        echo $message . PHP_EOL;
+        $errors[] = [
+            'input' => array_keys($message)[0],                 // Return name input error
+            'message' => $message[array_keys($message)[0]]      // Return message error
+        ];
     }
 }
 ```
