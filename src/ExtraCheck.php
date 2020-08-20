@@ -38,7 +38,7 @@ Trait ExtraCheck{
     {
         if(!is_array($value)){
             self::$errors[] = [
-                $param => 'Era esperado um informação em array para está informação.'
+                $param => 'Era esperado uma informação em formato array para está informação.'
             ];
             return [];
         }
