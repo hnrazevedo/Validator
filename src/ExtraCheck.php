@@ -40,6 +40,7 @@ Trait ExtraCheck{
             self::$errors[] = [
                 $param => 'Era esperado um informação em array para está informação.'
             ];
+            return [];
         }
         return $value;
     }

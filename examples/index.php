@@ -31,7 +31,7 @@ try{
             $errors[] = [
                 'input' => array_keys($message)[0],                 // Return name input error
                 'message' => $message[array_keys($message)[0]]      // Return message error
-            ]
+            ];
         }
     }
 
