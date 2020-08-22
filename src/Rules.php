@@ -4,6 +4,7 @@ namespace HnrAzevedo\Validator;
 
 Class Rules{
     private string $action;
+    protected static array $errors = [];
 
     private array $form = array();
 

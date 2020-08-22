@@ -9,7 +9,7 @@ Trait ExtraCheck{
     protected static array $required = [];
     protected static array $errors = [];
 
-    protected static function check_requireds()
+    protected static function checkRequireds()
     {
         if(count(self::$required) > 0){
             self::$errors[] = [
@@ -24,14 +24,14 @@ Trait ExtraCheck{
         return $d && $d->format($format) == $date;
     }
 
-    protected static function check_required(string $param): bool
+    protected static function checkRequired(string $param): bool
     {
         return (array_key_exists('required',self::$validators[self::$model]->getRules(self::$data['role'])[$param]) && self::$validators[self::$model]->getRules(self::$data['role'])[$param]['required']);
     }
 
     protected static function toNext(string $param, $value)
     {
-        return (self::check_required($param) || strlen($value > 0));
+        return (self::checkRequired($param) || strlen($value > 0));
     }
 
     protected static function testArray(string $param, $value): ?array

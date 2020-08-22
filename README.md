@@ -41,12 +41,12 @@ Para mais detalhes sobre como usar o Validator, veja a pasta de exemplos com det
 
 #### Configure
 
-#### It is necessary to configure the storage directory of the Validators objects with the validation rules
-É necessário configurar o diretório de armazenamento dos objetos Validators com as regras de validação
+#### It is necessary to configure the namespace of the classes that set the validation rules
+É necessário configurar o nomespace das classes que setaram as regras de validação
 
 ```php
 define("VALIDATOR_CONFIG", [
-    "path" => "/validations/"
+    "rules.namespace" => "Rules"
 ]);
 ```
 
@@ -73,7 +73,10 @@ Em casos de erros de configuração, o Validator disparara uma Exception.
 As regras de validação devem ser retiradas na construção do objeto extendido de HnrAzevedor\Validator
 
 ```php
-namespace HnrAzevedo\Validator;
+namespace Rules;
+
+use HnrAzevedo\Validator\Validator;
+use HnrAzevedo\Validator\Rules;
 
 Class User{
 
@@ -109,9 +112,9 @@ $data = [
         'email'=> 'hnr.azevedo@gmail.com',
         'password' => 123456,
         'password2' => 123456,
-        'phones' => [
+        'phones' => json_encode([
             '949164770','949164771','949164772'
-        ],
+        ]),
         'birth' => '28/09/1996' 
     ]),
     'provider' => 'user',   /* Class responsible for validations */

@@ -42,13 +42,6 @@ Class Validator{
         }
     }
 
-    private static function includeValidations()
-    {
-        if( file_exists(VALIDATOR_CONFIG['path'] . ucfirst(self::$data['provider']) . '.php') ){
-            require_once(VALIDATOR_CONFIG['path'] . ucfirst(self::$data['provider']) . '.php');
-        }
-    }
-
     private static function getClass(string $class)
     {
         if(!class_exists($class)){
@@ -79,10 +72,13 @@ Class Validator{
         self::$data = $datas;
 
         self::checkDatas();
-            
-        self::includeValidations();
 
-        self::$model = get_class(self::getClass('HnrAzevedo\\Validator\\'.ucfirst(self::$data['provider'])));
+        $model = VALIDATOR_CONFIG['rules.namespace'].'\\'.ucfirst(self::$data['provider']);
+        if(!class_exists($model)){
+            throw new Exception("No rules {$model} found.");
+        }
+            
+        self::$model = $model();
 
 		self::existRole(self::$model);
             
@@ -96,12 +92,12 @@ Class Validator{
 
         self::validate();
         
-        self::check_requireds();
+        self::checkRequireds();
 				
-		return self::check_errors();
+		return self::checkErrors();
     }
 
-    public static function check_errors(): bool
+    public static function checkErrors(): bool
     {
         return (count(self::$errors) === 0);
     }

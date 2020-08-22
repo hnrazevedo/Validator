@@ -5,7 +5,7 @@ namespace HnrAzevedo\Validator;
 Trait Check{
     use ExtraCheck;
 
-    protected static function check_minlength(string $param, $value)
+    protected static function checkMinlength(string $param, $value)
     {
         if(self::toNext($param,$value)){    
             
@@ -27,7 +27,7 @@ Trait Check{
         }       
     }
 
-    protected static function check_regex(string $param, $value)
+    protected static function checkRegex(string $param, $value)
     {
         if(self::toNext($param,$value)){
 
@@ -45,7 +45,7 @@ Trait Check{
         }       
     }
 
-    protected static function check_mincount(string $param, $value)
+    protected static function checkMincount(string $param, $value)
     {
         if(self::toNext($param,$value)){
             $array = self::testArray($param, json_decode(self::$data['data'])->$param);
@@ -57,7 +57,7 @@ Trait Check{
         }
     }
 
-    protected static function check_maxcount(string $param, $value)
+    protected static function checkMaxcount(string $param, $value)
     {
         if(self::toNext($param,$value)){
             $array = self::testArray($param, json_decode(self::$data['data'])->$param);
@@ -69,7 +69,7 @@ Trait Check{
         }
     }
 
-    protected static function check_equals(string $param, $value)
+    protected static function checkEquals(string $param, $value)
     {
         if(self::toNext($param,$value)){
 
@@ -88,7 +88,7 @@ Trait Check{
         }       
     }
 
-    protected static function check_maxlength(string $param, $value)
+    protected static function checkMaxlength(string $param, $value)
     {
         if(self::toNext($param,$value)){
 
@@ -106,7 +106,7 @@ Trait Check{
         }       
     }
 
-    protected static function check_type(string $param, $value)
+    protected static function checkType(string $param, $value)
     {
         if(self::toNext($param,$value)){
 
@@ -122,7 +122,7 @@ Trait Check{
         }       
     }
 
-    protected static function check_filter(string $param, $value)
+    protected static function checkFilter(string $param, $value)
     {
         if(self::toNext($param,$value)){
 

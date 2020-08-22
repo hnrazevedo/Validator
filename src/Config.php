@@ -1,5 +1,5 @@
 <?php
 
 define("VALIDATOR_CONFIG", [
-    "path" => "/validations/"
+    "rules.namespace" => "Rules"
 ]);

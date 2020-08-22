@@ -11,9 +11,9 @@ $data = [
         'email'=> 'hnr.azevedo@gmail.com',
         'password' => 123456,
         'password2' => 123456,
-        'phones' => [
+        'phones' => json_encode([
             '949164770','949164771','949164772'
-        ],
+        ]),
         'birth' => '28/09/1996' 
     ]),
     'provider' => 'user',
@@ -31,7 +31,7 @@ try{
             $errors[] = [
                 'input' => array_keys($message)[0],                 // Return name input error
                 'message' => $message[array_keys($message)[0]]      // Return message error
-            ]
+            ];
         }
     }
 
