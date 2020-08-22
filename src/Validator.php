@@ -78,7 +78,7 @@ Class Validator{
             throw new Exception("No rules {$model} found.");
         }
             
-        self::$model = $model();
+        self::$model = get_class(new $model());
 
 		self::existRole(self::$model);
             
@@ -117,7 +117,7 @@ Class Validator{
                     unset(self::$required[$key]);
 
 					foreach ($value as $subkey => $subvalue) {
-                        $function = "check_{$subkey}";
+                        $function = "check".ucfirst($subkey);
                         self::testMethod($function);
                         self::$function($keyy,$subvalue);
 					}
