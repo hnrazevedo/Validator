@@ -45,11 +45,12 @@ Class Validator{
     private static function getClass(string $class)
     {
         if(!class_exists($class)){
-		$class = basename($class);
             throw new Exception("Form ID {$class} inválido.");
         }
 
-        return new $class();
+        $class = get_class(new $class());
+
+        return $class;
     }
 
     private static function existRole($rules)
@@ -74,11 +75,8 @@ Class Validator{
         self::checkDatas();
 
         $model = VALIDATOR_CONFIG['rules.namespace'].'\\'.ucfirst(self::$data['provider']);
-        if(!class_exists($model)){
-            throw new Exception("No rules {$model} found.");
-        }
             
-        self::$model = get_class(new $model());
+        self::$model = self::getClass($model);
 
 		self::existRole(self::$model);
             
@@ -145,9 +143,9 @@ Class Validator{
         self::$data['provider'] = $request['provider'];
         self::$data['role'] = $request['role'];
 
-        self::includeValidations();
+        $model = VALIDATOR_CONFIG['rules.namespace'].'\\'.ucfirst($request['provider']);
 
-        self::$model = get_class( self::getClass('HnrAzevedo\\Validator\\'.ucfirst($request['provider'])) );
+        self::$model = self::getClass($model);
 
         self::existRole(self::$model);
 

@@ -1,5 +1,5 @@
 <?php
 
 define("VALIDATOR_CONFIG", [
-    "rules.namespace" => "Examples\\Rules"
+    "rules.namespace" => "Example\\Rules"
 ]);

@@ -38,6 +38,8 @@ try{
     /* Transforms validation to Json format to be validated on the client if desired */
     $json = Validator::toJson($data);
 
+    var_dump($json);
+
 }catch(Exception $er){
 
     die("Code Error: {$er->getCode()}, Line: {$er->getLine()}, File: {$er->getFile()}, Message: {$er->getMessage()}.");
