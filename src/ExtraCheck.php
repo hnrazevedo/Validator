@@ -36,11 +36,12 @@ Trait ExtraCheck{
 
     protected static function testArray(string $param, $value): ?array
     {
-        if(!is_array($value)){
+        if(!is_array(json_decode($value))){
             self::$errors[] = [
-                $param => 'Era esperado um informação em array para está informação.'
+                $param => 'Era esperado uma informação em formato array para está informação.'
             ];
+            return [];
         }
-        return $value;
+        return json_decode($value);
     }
 }
