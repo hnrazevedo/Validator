@@ -69,6 +69,10 @@ Em casos de erros de configuração, o Validator disparara uma Exception.
 - filter: integer - See https://www.php.net/manual/en/filter.filters.validate.php for more details of the available filters 
 - regex: string
 
+## NOTE
+#### In case the field is an array, the rules will be tested in all its elements.
+Em caso do campo ser um array, as regras serão testadas em todos seus elementos.
+
 #### The validation rules must be removed when constructing the extended HnrAzevedor\Validator object
 As regras de validação devem ser retiradas na construção do objeto extendido de HnrAzevedor\Validator
 
