@@ -1,7 +1,7 @@
 ﻿# Validator @HnrAzevedo
 
 [![Maintainer](https://img.shields.io/badge/maintainer-@hnrazevedo-blue?style=flat-square)](https://github.com/hnrazevedo)
-[![Latest Version](https://img.shields.io/github/v/tag/hnrazevedo/validator?label=version&style=flat-square)](Release)
+[![Latest Version](https://img.shields.io/github/v/tag/hnrazevedo/validator?label=version&style=flat-square)](https://github.com/hnrazevedo/Validator/releases)
 [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/quality/g/hnrazevedo/validator?style=flat-square)](https://scrutinizer-ci.com/g/hnrazevedo/Validator/?branch=master)
 [![Build Status](https://img.shields.io/scrutinizer/build/g/hnrazevedo/validator?style=flat-square)](https://scrutinizer-ci.com/g/hnrazevedo/Validator/build-status/master)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
