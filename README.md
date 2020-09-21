@@ -24,7 +24,7 @@ O Validator é um simples componente de validação de dados. Seu autor não é 
 Validator is available via Composer:
 
 ```bash 
-"hnrazevedo/validator": "^1.0"
+"hnrazevedo/validator": "^1.1"
 ```
 
 or run
@@ -86,7 +86,6 @@ Class User{
 
     public function __construct()
     {
-
         Validator::add($this, function(Rules $rules){
             $rules->setAction('login')
                   ->addField('email',['minlength'=>1,'filter'=>FILTER_VALIDATE_EMAIL,'required'=>true])
@@ -95,10 +94,8 @@ Class User{
                   ->addField('remember',['minlength'=>2,'maxlength'=>2,'required'=>false])
                   ->addField('birth',['type'=>'date','required'=>true])
                   ->addField('phones',['mincount'=>2,'maxcount'=>3,'required'=>true,'minlength'=>8,'maxlength'=>9]);
-
-			return $rules;
+            return $rules;
         });
-
         return $this;
     }
 
