@@ -9,7 +9,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/hnrazevedo/validator?style=flat-square)](https://packagist.org/packages/hnrazevedo/validator)
 
 
-###### Validator is a simple data validation component. Its author is not a professional in the development area, just someone in the Technology area who is improving his knowledge.
+##### Validator is a simple data validation component. Its author is not a professional in the development area, just someone in the Technology area who is improving his knowledge.
 
 O Validator é um simples componente de validação de dados. Seu autor não é profissional da área de desenvolvimento, apenas alguem da área de Tecnologia que está aperfeiçoando seus conhecimentos.
 
@@ -35,7 +35,7 @@ composer require hnrazevedo/validator
 
 ## Documentation
 
-###### For details on how to use the Validator, see the sample folder with details in the component directory
+##### For details on how to use the Validator, see the sample folder with details in the component directory
 
 Para mais detalhes sobre como usar o Validator, veja a pasta de exemplos com detalhes no diretório do componente
 
@@ -171,14 +171,13 @@ $json = Validator::toJson($data);
 
 ## Support
 
-###### Security: If you discover any security related issues, please email hnr.azevedo@gmail.com instead of using the issue tracker.
+##### Security: If you discover any security related issues, please email hnr.azevedo@gmail.com instead of using the issue tracker.
 
 Se você descobrir algum problema relacionado à segurança, envie um e-mail para hnr.azevedo@gmail.com em vez de usar o rastreador de problemas.
 
 ## Credits
 
 - [Henri Azevedo](https://github.com/hnrazevedo) (Developer)
-- [Robson V. Leite](https://github.com/robsonvleite) (Readme based on your datalayer design)
 
 ## License
 
