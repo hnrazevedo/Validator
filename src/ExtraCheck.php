@@ -4,41 +4,46 @@ namespace HnrAzevedo\Validator;
 
 Trait ExtraCheck
 {
-    protected static array $data = [];
-    protected static array $validators = [];
-    protected static string $model = '';
-    protected static array $required = [];
-    protected static array $errors = [];
+    use Helper;
+    
+    protected array $data = [];
+    protected array $validators = [];
+    protected string $model = '';
+    protected array $required = [];
+    protected array $errors = [];
 
-    protected static function checkRequireds(): void
+    protected function checkRequireds(): void
     {
-        if(count(self::$required) > 0){
-            self::$errors[] = [
-                'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::$required))
+        if(count(self::getInstance()->required) > 0){
+            self::getInstance()->errors[] = [
+                'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::getInstance()->required))
             ];
         }
     }
 
-    public static function validateDate($date, $format = 'Y-m-d H:i:s')
+    public function validateDate($date, $format = 'Y-m-d H:i:s')
     {
         $d = \DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) == $date;
     }
 
-    protected static function checkRequired(string $param): bool
+    protected function checkRequired(string $param): bool
     {
-        return (array_key_exists('required',self::$validators[self::$model]->getRules(self::$data['ROLE'])[$param]) && self::$validators[self::$model]->getRules(self::$data['ROLE'])[$param]['required']);
+        return (array_key_exists(
+            'required',
+            self::getInstance()->validators[self::getInstance()->model]->getRules(self::getInstance()->data['ROLE'])[$param]) 
+        && self::getInstance()->validators[self::getInstance()->model]->getRules(self::getInstance()->data['ROLE'])[$param]['required']);
     }
 
-    protected static function toNext(string $param, $value): bool
+    protected function toNext(string $param, $value): bool
     {
-        return (self::checkRequired($param) || strlen($value > 0));
+        return (self::getInstance()->checkRequired($param) || strlen($value > 0));
     }
 
-    protected static function testArray(string $param, $value): ?array
+    protected function testArray(string $param, $value): ?array
     {
         if(!is_array($value)){
-            self::$errors[] = [
+            self::getInstance()->errors[] = [
                 $param => 'Era esperado uma informação em formato array para está informação'
             ];
             return [];
