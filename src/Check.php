@@ -4,7 +4,14 @@ namespace HnrAzevedo\Validator;
 
 Trait Check
 {
-    use ExtraCheck;
+    use ExtraCheck,
+        Helper;
+
+    protected array $data = [];
+    protected array $validators = [];
+    protected string $model = '';
+    protected array $required = [];
+    protected array $errors = [];
 
     protected function checkMinlength(string $param, $value): void
     {
