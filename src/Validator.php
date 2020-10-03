@@ -95,9 +95,7 @@ Class Validator implements MiddlewareInterface
 
 			foreach (self::$data as $keyy => $valuee) {
 
-				if(!array_key_exists($keyy, (self::$validators[self::$model]->getRules(self::$data['ROLE'])) ) && !in_array($keyy,self::getInstance()->defaultData)){
-                    throw new \RuntimeException("O campo '{$keyy}' não é esperado para está operação");
-                }
+				self::checkExpected($keyy);
 
 				if($keyy===$key){
 
@@ -110,6 +108,13 @@ Class Validator implements MiddlewareInterface
 					}
 				}
 			}
+        }
+    }
+
+    private static function checkExpected(string $keyy): void
+    {
+        if(!array_key_exists($keyy, (self::$validators[self::$model]->getRules(self::$data['ROLE'])) ) && !in_array($keyy,self::getInstance()->defaultData)){
+            throw new \RuntimeException("O campo '{$keyy}' não é esperado para está operação");
         }
     }
 

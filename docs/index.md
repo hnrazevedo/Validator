@@ -4,19 +4,20 @@
 [![Latest Version](https://img.shields.io/github/v/tag/hnrazevedo/validator?label=version&style=flat-square)](https://github.com/hnrazevedo/Validator/releases)
 [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/quality/g/hnrazevedo/validator?style=flat-square)](https://scrutinizer-ci.com/g/hnrazevedo/Validator/?branch=master)
 [![Build Status](https://img.shields.io/scrutinizer/build/g/hnrazevedo/validator?style=flat-square)](https://scrutinizer-ci.com/g/hnrazevedo/Validator/build-status/master)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![PHP from Packagist](https://img.shields.io/packagist/php-v/hnrazevedo/validator?style=flat-square)](https://packagist.org/packages/hnrazevedo/validator)
 [![Total Downloads](https://img.shields.io/packagist/dt/hnrazevedo/validator?style=flat-square)](https://packagist.org/packages/hnrazevedo/validator)
 
 
-##### Validator is a simple data validation component. Its author is not a professional in the development area, just someone in the Technology area who is improving his knowledge.
+##### The Validator is a simple data validation component. It can be used statically with a controller or together as middleware. Its author is not a professional in the development area, just someone in the Technology area who is improving his knowledge.
 
-O Validator é um simples componente de validação de dados. Seu autor não é profissional da área de desenvolvimento, apenas alguem da área de Tecnologia que está aperfeiçoando seus conhecimentos.
+O Validator é um simples componente de validação de dados. Ele pode ser usado de forma estática com algum controlador ou em conjunto como middleware. Seu autor não é profissional da área de desenvolvimento, apenas alguem da área de Tecnologia que está aperfeiçoando seus conhecimentos.
 
 ### Highlights
 
 - Easy to set up (Fácil de configurar)
 - Current validation rules (Regras de validação atuais)
+- Follows standard PSR-15 (Segue padrão o PSR-15)
 - Composer ready (Pronto para o composer)
 
 ## Installation
@@ -24,10 +25,10 @@ O Validator é um simples componente de validação de dados. Seu autor não é 
 Validator is available via Composer:
 
 ```bash 
-"hnrazevedo/validator": "^1.1"
+"hnrazevedo/validator": "^2.0"
 ```
 
-or run
+or in at terminal
 
 ```bash
 composer require hnrazevedo/validator
@@ -39,21 +40,12 @@ composer require hnrazevedo/validator
 
 Para mais detalhes sobre como usar o Validator, veja a pasta de exemplos com detalhes no diretório do componente
 
-#### Configure
-
-#### It is necessary to configure the namespace of the classes that set the validation rules
-É necessário configurar o nomespace das classes que setaram as regras de validação
-
-```php
-define("VALIDATOR_CONFIG", [
-    "rules.namespace" => "Rules"
-]);
-```
 
 ### Errors
 
 #### In case of errors, Validator will throw a Exception.
-Em casos de erros de configuração, o Validator disparara uma Exception.
+
+Em casos de erros de configuração, o Validator disparara uma RunTimeException.
 
 ### Validation rules
 
@@ -70,14 +62,17 @@ Em casos de erros de configuração, o Validator disparara uma Exception.
 - regex: string
 
 ## NOTE
+
 #### In case the field is an array, the rules will be tested in all its elements.
+
 Em caso do campo ser um array, as regras serão testadas em todos seus elementos.
 
 #### The validation rules must be removed when constructing the extended HnrAzevedor\Validator object
+
 As regras de validação devem ser retiradas na construção do objeto extendido de HnrAzevedor\Validator
 
 ```php
-namespace Rules;
+namespace App\Rules;
 
 use HnrAzevedo\Validator\Validator;
 use HnrAzevedo\Validator\Rules;
@@ -105,31 +100,36 @@ Class User{
 ### Data format for validation
 
 #### The data for validation must be passed to the component as follows
-Os dados para validação devem ser passados ??para o componente da seguinte forma
+Os dados para validação devem ser passados ​​para o componente da seguinte forma
 
 ```php
 $data = [
-    'data' => json_encode([
-        'email'=> 'hnr.azevedo@gmail.com',
-        'password' => 123456,
-        'password2' => 123456,
-        'phones' => json_encode([
-            '949164770','949164771','949164772'
-        ]),
-        'birth' => '28/09/1996' 
-    ]),
-    'provider' => 'user',   /* Class responsible for validations */
-    'role' => 'login'       /* Form action */
+    'email'=> 'hnr.azevedo@gmail.com',
+    'password' => 123456,
+    'password2' => 123456,
+    'phones' => [
+        '949164770','949164771','949164772'
+    ],
+    'birth' => '28/09/1996' 
+    'PROVIDER' => 'user',   /* Class responsible for validations */
+    'ROLE' => 'login'       /* Form action */
 ];
 ```
+
+### Defining namespace
+
+#### To use dynamically to avoid the need to place the entire namespace of a class with rules, you must define the namespace before performing data validation
+
+Para utilização de forma dinamica para evitar a necessidade de colocar o namespace inteiro de uma class com regras, deve-se definir o namespace antes de executar a validação dos dados
 
 ### Check data
 
 #### Validation errors are returned in an error array, in case there are more than one occurrence, they can be displayed at the same time
+
 Os erros de validação são retornados em uma matriz de erro, caso haja mais de uma ocorrência, eles podem ser exibidos ao mesmo tempo
 
 ```php
-$valid = Validator::execute($data);
+$valid = Validator::namespace('App\\Rules')->execute($data);
 
 if(!$valid){
     $errors = [];
@@ -141,17 +141,15 @@ if(!$valid){
     }
 }
 ```
-### NOTE
-#### In case of configuration error or improper receipt of data, Validator will throw an Exception.
-Em caso de erro de configuração ou de recebimento indevido dos dados o Validator lançara uma Exception.
 
 ### toJson
 
 #### Returns a readable Json for validation to be performed on the client side
+
 Retorna um Json legível para validação a ser realizada no lado do cliente
 
 ```php
-$json = Validator::toJson($data);
+$json = Validator::namespace('App\\Rules')->toJson($data);
 
 /**
  * Result:
