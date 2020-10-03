@@ -2,7 +2,8 @@
 
 namespace HnrAzevedo\Validator;
 
-Class Rules{
+Class Rules
+{
     private string $action;
     protected static array $errors = [];
 

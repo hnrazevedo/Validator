@@ -3,49 +3,36 @@
 namespace HnrAzevedo\Validator;
 
 use HnrAzevedo\Validator\Rules;
-use Exception;
+use Psr\Http\Server\MiddlewareInterface;
 
-Class Validator{
-    use Check;
+Class Validator implements MiddlewareInterface
+{
+    use Check, MiddlewareTrait;
+
+    private static Validator $instance;
+    private string $namespace = '';
+    private array $defaultData = [
+        'REQUEST_METHOD',
+        'PROVIDER',
+        'ROLE'
+    ];
+
+    private static function getInstance(): Validator
+    {
+        self::$instance = (isset(self::$instance)) ? self::$instance : new self();
+        return self::$instance;
+    }
 
     public static function add(object $model,callable $return): void
     {
         self::$model = get_class($model);
-        self::$validators[self::$model] = $return($Rules = new Rules($model));
-    }
-    
-    private static function existData()
-    {
-        if(!array_key_exists('data', self::$data)){
-            throw new Exception('Informações cruciais não foram recebidas.');
-        }
-    }
-
-    private static function jsonData()
-    {
-        if(json_decode(self::$data['data']) === null){
-            throw new Exception('O servidor recebeu as informações no formato esperado.');
-        }
-    }
-
-    private static function hasProvider()
-    {
-        if(!array_key_exists('provider',self::$data)){
-            throw new Exception('O servidor não recebeu o ID do formulário.');
-        }
-    }
-
-    private static function hasRole()
-    {
-        if(!array_key_exists('role',self::$data)){
-            throw new Exception('O servidor não conseguiu identificar a finalidade deste formulário.');
-        }
+        self::$validators[self::$model] = $return(new Rules($model));
     }
 
     private static function getClass(string $class)
     {
         if(!class_exists($class)){
-            throw new Exception("Form ID {$class} inválido.");
+            throw new \RuntimeException("Form ID {$class} inválido.");
         }
 
         $class = get_class(new $class());
@@ -55,32 +42,31 @@ Class Validator{
 
     private static function existRole($rules)
     {
-        if(empty(self::$validators[$rules]->getRules(self::$data['role']))){
-            throw new Exception('Não existe regras para validar este formulário.');
+        if(empty(self::$validators[$rules]->getRules(self::$data['ROLE']))){
+            throw new \RuntimeException('Não existe regras para validar este formulário.');
         }
     }
 
-    public static function checkDatas()
+    public function checkDatas(array $data): void
     {
-		self::existData();
-        self::jsonData();
-        self::hasProvider();
-        self::hasRole();
+        if(!isset($data['PROVIDER']) || !isset($data['ROLE'])){
+            throw new \RuntimeException('The server did not receive the information needed to retrieve the requested validator');
+        }
     }
 
-    public static function execute(array $datas): bool
+    public static function execute(array $data): bool
     {
-        self::$data = $datas;
+        self::getInstance()->checkDatas($data);
 
-        self::checkDatas();
+        self::$data = $data;
 
-        $model = VALIDATOR_CONFIG['rules.namespace'].'\\'.ucfirst(self::$data['provider']);
+        $model = self::getInstance()->namespace.'\\'.ucfirst(self::$data['PROVIDER']);
             
         self::$model = self::getClass($model);
 
 		self::existRole(self::$model);
             
-		foreach ( (self::$validators[self::$model]->getRules($datas['role'])) as $key => $value) {
+		foreach ( (self::$validators[self::$model]->getRules($data['ROLE'])) as $key => $value) {
             if(@$value['required'] === true){
                 self::$required[$key] = $value;
             }
@@ -100,14 +86,14 @@ Class Validator{
         return (count(self::$errors) === 0);
     }
     
-    public static function validate()
+    public static function validate(): void
     {
-        foreach ( (self::$validators[self::$model]->getRules(self::$data['role'])) as $key => $value) {
+        foreach ( (self::$validators[self::$model]->getRules(self::$data['ROLE'])) as $key => $value) {
 
-			foreach (json_decode(self::$data['data']) as $keyy => $valuee) {
+			foreach (self::$data as $keyy => $valuee) {
 
-				if(!array_key_exists($keyy, (self::$validators[self::$model]->getRules(self::$data['role'])) )){
-                    throw new Exception("O campo '{$keyy}' não é esperado para está operação.");
+				if(!array_key_exists($keyy, (self::$validators[self::$model]->getRules(self::$data['ROLE'])) ) && !in_array($keyy,self::getInstance()->defaultData)){
+                    throw new \RuntimeException("O campo '{$keyy}' não é esperado para está operação.");
                 }
 
 				if($keyy===$key){
@@ -132,7 +118,7 @@ Class Validator{
     public static function testMethod($method)
     {
         if(!method_exists(static::class, $method)){
-            throw new Exception("{$method} não é uma validação válida.");
+            throw new \RuntimeException("{$method} não é uma validação válida.");
         }
     }
 
@@ -140,16 +126,18 @@ Class Validator{
     { 
         $response = null;
 
-        self::$data['provider'] = $request['provider'];
-        self::$data['role'] = $request['role'];
+        self::getInstance()->checkDatas($request);
 
-        $model = VALIDATOR_CONFIG['rules.namespace'].'\\'.ucfirst($request['provider']);
+        self::$data['PROVIDER'] = $request['PROVIDER'];
+        self::$data['ROLE'] = $request['ROLE'];
+
+        $model = self::getInstance()->namespace.'\\'.ucfirst($request['PROVIDER']);
 
         self::$model = self::getClass($model);
 
         self::existRole(self::$model);
 
-		foreach ( self::$validators[self::$model]->getRules($request['role'])  as $field => $r) {
+		foreach ( self::$validators[self::$model]->getRules($request['ROLE'])  as $field => $r) {
             $r = self::replaceRegex($r);
             $response .= ("{$field}:".json_encode(array_reverse($r))).',';
         }
@@ -163,5 +151,11 @@ Class Validator{
             $rules['regex'] = substr($rules['regex'],1,-2);
         }
         return $rules;
+    }
+
+    public static function namespace(string $namespace): Validator
+    {
+        self::getInstance()->namespace = $namespace;
+        return self::getInstance();
     }
 }

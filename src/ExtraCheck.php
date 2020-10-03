@@ -2,14 +2,15 @@
 
 namespace HnrAzevedo\Validator;
 
-Trait ExtraCheck{
+Trait ExtraCheck
+{
     protected static array $data = [];
     protected static array $validators = [];
     protected static string $model = '';
     protected static array $required = [];
     protected static array $errors = [];
 
-    protected static function checkRequireds()
+    protected static function checkRequireds(): void
     {
         if(count(self::$required) > 0){
             self::$errors[] = [
@@ -26,10 +27,10 @@ Trait ExtraCheck{
 
     protected static function checkRequired(string $param): bool
     {
-        return (array_key_exists('required',self::$validators[self::$model]->getRules(self::$data['role'])[$param]) && self::$validators[self::$model]->getRules(self::$data['role'])[$param]['required']);
+        return (array_key_exists('required',self::$validators[self::$model]->getRules(self::$data['ROLE'])[$param]) && self::$validators[self::$model]->getRules(self::$data['ROLE'])[$param]['required']);
     }
 
-    protected static function toNext(string $param, $value)
+    protected static function toNext(string $param, $value): bool
     {
         return (self::checkRequired($param) || strlen($value > 0));
     }

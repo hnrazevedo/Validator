@@ -1,7 +1,7 @@
 ﻿# Validator @HnrAzevedo
 
 [![Maintainer](https://img.shields.io/badge/maintainer-@hnrazevedo-blue?style=flat-square)](https://github.com/hnrazevedo)
-[![Latest Version](https://img.shields.io/github/v/tag/hnrazevedo/validator?label=version&style=flat-square)](Release)
+[![Latest Version](https://img.shields.io/github/v/tag/hnrazevedo/validator?label=version&style=flat-square)](https://github.com/hnrazevedo/Validator/releases)
 [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/quality/g/hnrazevedo/validator?style=flat-square)](https://scrutinizer-ci.com/g/hnrazevedo/Validator/?branch=master)
 [![Build Status](https://img.shields.io/scrutinizer/build/g/hnrazevedo/validator?style=flat-square)](https://scrutinizer-ci.com/g/hnrazevedo/Validator/build-status/master)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
@@ -9,7 +9,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/hnrazevedo/validator?style=flat-square)](https://packagist.org/packages/hnrazevedo/validator)
 
 
-###### Validator is a simple data validation component. Its author is not a professional in the development area, just someone in the Technology area who is improving his knowledge.
+##### Validator is a simple data validation component. Its author is not a professional in the development area, just someone in the Technology area who is improving his knowledge.
 
 O Validator é um simples componente de validação de dados. Seu autor não é profissional da área de desenvolvimento, apenas alguem da área de Tecnologia que está aperfeiçoando seus conhecimentos.
 
@@ -24,7 +24,7 @@ O Validator é um simples componente de validação de dados. Seu autor não é 
 Validator is available via Composer:
 
 ```bash 
-"hnrazevedo/validator": "^1.0"
+"hnrazevedo/validator": "^1.1"
 ```
 
 or run
@@ -35,7 +35,7 @@ composer require hnrazevedo/validator
 
 ## Documentation
 
-###### For details on how to use the Validator, see the sample folder with details in the component directory
+##### For details on how to use the Validator, see the sample folder with details in the component directory
 
 Para mais detalhes sobre como usar o Validator, veja a pasta de exemplos com detalhes no diretório do componente
 
@@ -86,7 +86,6 @@ Class User{
 
     public function __construct()
     {
-
         Validator::add($this, function(Rules $rules){
             $rules->setAction('login')
                   ->addField('email',['minlength'=>1,'filter'=>FILTER_VALIDATE_EMAIL,'required'=>true])
@@ -95,10 +94,8 @@ Class User{
                   ->addField('remember',['minlength'=>2,'maxlength'=>2,'required'=>false])
                   ->addField('birth',['type'=>'date','required'=>true])
                   ->addField('phones',['mincount'=>2,'maxcount'=>3,'required'=>true,'minlength'=>8,'maxlength'=>9]);
-
-			return $rules;
+            return $rules;
         });
-
         return $this;
     }
 
@@ -171,14 +168,13 @@ $json = Validator::toJson($data);
 
 ## Support
 
-###### Security: If you discover any security related issues, please email hnr.azevedo@gmail.com instead of using the issue tracker.
+##### Security: If you discover any security related issues, please email hnr.azevedo@gmail.com instead of using the issue tracker.
 
 Se você descobrir algum problema relacionado à segurança, envie um e-mail para hnr.azevedo@gmail.com em vez de usar o rastreador de problemas.
 
 ## Credits
 
 - [Henri Azevedo](https://github.com/hnrazevedo) (Developer)
-- [Robson V. Leite](https://github.com/robsonvleite) (Readme based on your datalayer design)
 
 ## License
 
