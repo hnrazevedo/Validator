@@ -1,38 +1,40 @@
 <?php
 
-session_start();
-
 require __DIR__.'/../vendor/autoload.php';
-require __DIR__.'/Routes/default.php';
 
 use HnrAzevedo\Http\Factory;
 use HnrAzevedo\Http\Uri;
+use HnrAzevedo\Validator\Validator;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-
-use HnrAzevedo\Router\Router;
 use Psr\Http\Server\MiddlewareInterface;
 
 try{
-    $serverRequest = (new Factory())->createServerRequest($_SERVER['REQUEST_METHOD'], new Uri($_SERVER['REQUEST_URI']));
+    $serverRequest = (new Factory())->createServerRequest('GET', new Uri('/'));
+    $serverRequest = $serverRequest->withAttribute('validator',[
+        'namespace' => 'HnrAzevedo\\Validator\\Example\\Rules',
+        'data' => $data
+    ]);
 
     class App implements MiddlewareInterface{
         public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
         {
-            if(empty($request->getAttribute('route')))
-            {
-                throw new Exception('Page not found', 404);
+            if(!$request->getAttribute('validator')['valid']){
+                $err = '';
+                foreach($request->getAttribute('validator')['errors'] as $er => $error){
+                    $err .= (is_array($error)) ? implode('',array_keys($error)) . ' ' . implode('', array_values($error)) : $error;
+                    $err .= ', ';
+                }
+                throw new \Exception(substr($err, 0, -2));
             }
 
-            $request->getAttribute('route')['action']();
-
-            return (new Factory())->createResponse(200);
+            return $handler->handle($request);
         }
     }
 
     define('GLOBAL_MIDDLEWARES',[
-        Router::class,
+        Validator::class,
         App::class
     ]);
 

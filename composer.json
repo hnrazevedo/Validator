@@ -16,7 +16,7 @@
     "autoload": {
         "psr-4": {
             "HnrAzevedo\\Validator\\":"src/",
-            "Example\\Rules\\":"examples/Rules/"
+            "HnrAzevedo\\Validator\\Example\\Rules\\":"examples/Rules/"
         }
     }
 }

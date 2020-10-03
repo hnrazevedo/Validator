@@ -32,7 +32,7 @@ Class Validator implements MiddlewareInterface
     private static function getClass(string $class)
     {
         if(!class_exists($class)){
-            throw new \RuntimeException("Form ID {$class} inválido.");
+            throw new \RuntimeException("Form ID {$class} inválido");
         }
 
         $class = get_class(new $class());
@@ -43,7 +43,7 @@ Class Validator implements MiddlewareInterface
     private static function existRole($rules)
     {
         if(empty(self::$validators[$rules]->getRules(self::$data['ROLE']))){
-            throw new \RuntimeException('Não existe regras para validar este formulário.');
+            throw new \RuntimeException('Não existe regras para validar este formulário');
         }
     }
 
@@ -56,28 +56,31 @@ Class Validator implements MiddlewareInterface
 
     public static function execute(array $data): bool
     {
-        self::getInstance()->checkDatas($data);
+        try{
+            self::getInstance()->checkDatas($data);
 
-        self::$data = $data;
+            self::$data = $data;
 
-        $model = self::getInstance()->namespace.'\\'.ucfirst(self::$data['PROVIDER']);
-            
-        self::$model = self::getClass($model);
+            $model = self::getInstance()->namespace.'\\'.ucfirst(self::$data['PROVIDER']);
+                
+            self::$model = self::getClass($model);
 
-		self::existRole(self::$model);
-            
-		foreach ( (self::$validators[self::$model]->getRules($data['ROLE'])) as $key => $value) {
-            if(@$value['required'] === true){
-                self::$required[$key] = $value;
+            self::existRole(self::$model);
+                
+            foreach ( (self::$validators[self::$model]->getRules($data['ROLE'])) as $key => $value) {
+                if(@$value['required'] === true){
+                    self::$required[$key] = $value;
+                }
             }
-        }
 
-        self::$errors = [];
-
-        self::validate();
+            self::$errors = [];
         
-        self::checkRequireds();
-				
+            self::validate();
+            self::checkRequireds();
+        }catch(\Exception $er){
+            self::$errors[] = $er->getMessage();
+        }
+        
 		return self::checkErrors();
     }
 
@@ -93,7 +96,7 @@ Class Validator implements MiddlewareInterface
 			foreach (self::$data as $keyy => $valuee) {
 
 				if(!array_key_exists($keyy, (self::$validators[self::$model]->getRules(self::$data['ROLE'])) ) && !in_array($keyy,self::getInstance()->defaultData)){
-                    throw new \RuntimeException("O campo '{$keyy}' não é esperado para está operação.");
+                    throw new \RuntimeException("O campo '{$keyy}' não é esperado para está operação");
                 }
 
 				if($keyy===$key){
@@ -118,7 +121,7 @@ Class Validator implements MiddlewareInterface
     public static function testMethod($method)
     {
         if(!method_exists(static::class, $method)){
-            throw new \RuntimeException("{$method} não é uma validação válida.");
+            throw new \RuntimeException("{$method} não é uma validação válida");
         }
     }
 

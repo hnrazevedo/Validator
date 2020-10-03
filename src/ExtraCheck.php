@@ -14,7 +14,7 @@ Trait ExtraCheck
     {
         if(count(self::$required) > 0){
             self::$errors[] = [
-                'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::$required)).'.'
+                'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::$required))
             ];
         }
     }
@@ -37,12 +37,12 @@ Trait ExtraCheck
 
     protected static function testArray(string $param, $value): ?array
     {
-        if(!is_array(json_decode($value))){
+        if(!is_array($value)){
             self::$errors[] = [
-                $param => 'Era esperado uma informação em formato array para está informação.'
+                $param => 'Era esperado uma informação em formato array para está informação'
             ];
             return [];
         }
-        return json_decode($value);
+        return $value;
     }
 }
