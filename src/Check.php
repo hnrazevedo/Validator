@@ -33,11 +33,10 @@ Trait Check
     {
         if(self::getInstance()->toNext($param, $value)){
 
-            $realval = (is_array(self::getInstance()->data[$param])) ? self::getInstance()->data[$param] : [self::getInstance()->data($param)];
+            $realval = (is_array(self::getInstance()->data($param))) ? self::getInstance()->data($param) : [self::getInstance()->data($param)];
 
             foreach($realval as $val){
-
-                if(!preg_match(self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data('ROLE'))[$param]['regex'], $val)){
+                if(!preg_match(self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data('ROLE'))[$param]['regex'], $val)){
                     self::getInstance()->error([
                         $param => 'inválido(a)'
                     ]);

@@ -137,11 +137,11 @@ Class Validator implements MiddlewareInterface
 
         $model = self::getInstance()->namespace.'\\'.ucfirst($request['PROVIDER']);
 
-        self::getInstance()->model = self::getClass($model);
+        self::getInstance()->model(self::getClass($model));
 
-        self::getInstance()->existRole(self::getInstance()->model);
+        self::getInstance()->existRole(self::getInstance()->model());
 
-		foreach ( self::getInstance()->validator(self::getInstance()->model)->getRules($request['ROLE'])  as $field => $r) {
+		foreach ( self::getInstance()->validator(self::getInstance()->model())->getRules($request['ROLE'])  as $field => $r) {
             $r = self::getInstance()->replaceRegex($r);
             $response .= ("{$field}:".json_encode(array_reverse($r))).',';
         }

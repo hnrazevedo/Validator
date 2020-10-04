@@ -25,8 +25,8 @@ Trait ExtraCheck
     {
         return (array_key_exists(
             'required',
-            self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['ROLE'])[$param]) 
-        && self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['ROLE'])[$param]['required']);
+            self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data['ROLE'])[$param]) 
+        && self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data['ROLE'])[$param]['required']);
     }
 
     protected function toNext(string $param, $value): bool

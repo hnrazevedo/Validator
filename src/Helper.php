@@ -41,4 +41,12 @@ trait Helper
         return $this->validators[$model];
     }
 
+    protected function model(?string $model = null): string
+    {
+        if(null !== $model){
+            $this->model = $model;
+        }
+        return $this->model;
+    }
+
 }
