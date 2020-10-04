@@ -8,9 +8,9 @@ Trait ExtraCheck
     
     protected function checkRequireds(): void
     {
-        if(count(self::getInstance()->required) > 0){
+        if(count(self::getInstance()->required()) > 0){
             self::getInstance()->error([
-                'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::getInstance()->required))
+                'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::getInstance()->required()))
             ]);
         }
     }
@@ -25,8 +25,8 @@ Trait ExtraCheck
     {
         return (array_key_exists(
             'required',
-            self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data['ROLE'])[$param]) 
-        && self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data['ROLE'])[$param]['required']);
+            self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data('ROLE'))[$param]) 
+        && self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data('ROLE'))[$param]['required']);
     }
 
     protected function toNext(string $param, $value): bool
@@ -37,7 +37,7 @@ Trait ExtraCheck
     protected function testArray(string $param, $value): ?array
     {
         if(!is_array($value)){
-            self::getInstance()->errors([
+            self::getInstance()->error([
                 $param => 'Era esperado uma informação em formato array para está informação'
             ]);
             return [];

@@ -49,4 +49,9 @@ trait Helper
         return $this->model;
     }
 
+    protected function required(): array
+    {
+        return $this->required;
+    }
+
 }
