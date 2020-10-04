@@ -40,13 +40,6 @@ composer require hnrazevedo/validator
 
 Para mais detalhes sobre como usar o Validator, veja a pasta de exemplos com detalhes no diretório do componente
 
-
-### Errors
-
-#### In case of errors, Validator will throw a Exception.
-
-Em casos de erros de configuração, o Validator disparara uma RunTimeException.
-
 ### Validation rules
 
 #### Available rules
