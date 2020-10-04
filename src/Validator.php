@@ -8,6 +8,7 @@ use Psr\Http\Server\MiddlewareInterface;
 Class Validator implements MiddlewareInterface
 {
     use Check,
+        ExtraCheck,
         MiddlewareTrait,
         Helper;
 
@@ -18,10 +19,10 @@ Class Validator implements MiddlewareInterface
         'ROLE'
     ];
 
-    public static function add(object $model,callable $return): void
+    public static function add(object $model, \Closure $return): void
     {
         self::getInstance()->model = get_class($model);
-        self::getInstance()->validators[self::getInstance()->model] = $return(new Rules($model));
+        self::getInstance()->validator(self::getInstance()->model, $return(new Rules($model)));
     }
 
     private static function getClass(string $class)
@@ -37,7 +38,7 @@ Class Validator implements MiddlewareInterface
 
     private function existRole($rules)
     {
-        if(empty(self::getInstance()->validators[$rules]->getRules(self::getInstance()->data['ROLE']))){
+        if(empty(self::getInstance()->validator($rules)->getRules(self::getInstance()->data['ROLE']))){
             throw new \RuntimeException('Não existe regras para validar este formulário');
         }
     }
@@ -62,7 +63,7 @@ Class Validator implements MiddlewareInterface
 
             self::getInstance()->existRole(self::getInstance()->model);
                 
-            foreach ( (self::getInstance()->validators[self::getInstance()->model]->getRules($data['ROLE'])) as $key => $value) {
+            foreach ( (self::getInstance()->validator(self::getInstance()->model)->getRules($data['ROLE'])) as $key => $value) {
                 if(@$value['required'] === true){
                     self::getInstance()->required[$key] = $value;
                 }
@@ -86,7 +87,7 @@ Class Validator implements MiddlewareInterface
     
     public function validate(): void
     {
-        foreach ( (self::getInstance()->validators[self::getInstance()->model]->getRules(self::getInstance()->data['ROLE'])) as $key => $value) {
+        foreach ( (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['ROLE'])) as $key => $value) {
 
 			foreach (self::getInstance()->data as $keyy => $valuee) {
 
@@ -108,7 +109,7 @@ Class Validator implements MiddlewareInterface
 
     private function checkExpected(string $keyy): void
     {
-        if(!array_key_exists($keyy, (self::getInstance()->validators[self::getInstance()->model]->getRules(self::getInstance()->data['ROLE'])) ) && !in_array($keyy, self::getInstance()->defaultData)){
+        if(!array_key_exists($keyy, (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['ROLE'])) ) && !in_array($keyy, self::getInstance()->defaultData)){
             throw new \RuntimeException("O campo '{$keyy}' não é esperado para está operação");
         }
     }
@@ -118,7 +119,7 @@ Class Validator implements MiddlewareInterface
         return self::getInstance()->errors;
     }
 
-    public function testMethod($method)
+    public function testMethod($method): void
     {
         if(!method_exists(static::class, $method)){
             throw new \RuntimeException("{$method} não é uma validação válida");
@@ -140,7 +141,7 @@ Class Validator implements MiddlewareInterface
 
         self::getInstance()->existRole(self::getInstance()->model);
 
-		foreach ( self::getInstance()->validators[self::getInstance()->model]->getRules($request['ROLE'])  as $field => $r) {
+		foreach ( self::getInstance()->validator(self::getInstance()->model)->getRules($request['ROLE'])  as $field => $r) {
             $r = self::getInstance()->replaceRegex($r);
             $response .= ("{$field}:".json_encode(array_reverse($r))).',';
         }
