@@ -9,7 +9,7 @@ Trait Check
 
     protected function checkMinlength(string $param, $value): void
     {
-        if(self::getInstance()->toNext($param, $value)){    
+        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){ 
             
             $realval = (is_array(self::getInstance()->data($param))) ? self::getInstance()->data($param) : [self::getInstance()->data($param)];
 
@@ -31,7 +31,7 @@ Trait Check
 
     protected function checkRegex(string $param, $value): void
     {
-        if(self::getInstance()->toNext($param, $value)){
+        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
 
             $realval = (is_array(self::getInstance()->data($param))) ? self::getInstance()->data($param) : [self::getInstance()->data($param)];
 
@@ -47,7 +47,7 @@ Trait Check
 
     protected function checkMincount(string $param, $value): void
     {
-        if(self::getInstance()->toNext($param, $value)){
+        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
             $array = self::getInstance()->testArray($param, self::getInstance()->data($param));
             if(count($array) < $value){
                 self::getInstance()->error([
@@ -59,7 +59,7 @@ Trait Check
 
     protected function checkMaxcount(string $param, $value): void
     {
-        if(self::getInstance()->toNext($param, $value)){
+        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
             $array = self::getInstance()->testArray($param, self::getInstance()->data($param));
             if(count($array) > $value){
                 self::getInstance()->error([
@@ -71,26 +71,22 @@ Trait Check
 
     protected function checkEquals(string $param, $value): void
     {
-        if(self::getInstance()->toNext($param, $value)){
-
-            if(!array_key_exists($param, self::getInstance()->data())){
-                self::getInstance()->error([
-                    $param => "O servidor não encontrou a informação '{$value}' para ser comparada"
-                ]);
-            }
+        if(!array_key_exists($param, self::getInstance()->data())){
+            self::getInstance()->error([
+                $param => "O servidor não encontrou a informação '{$value}' para ser comparada"
+            ]);
+        }
             
-            if(self::getInstance()->data($param) != self::getInstance()->data($value)){
-                self::getInstance()->error([
-                    $param => 'está diferente de '.ucfirst($value)
-                ]);
-            }
-
-        }       
+        if(self::getInstance()->data($param) != self::getInstance()->data($value)){
+            self::getInstance()->error([
+                $param => 'está diferente de '.ucfirst($value)
+            ]);
+        } 
     }
 
     protected function checkMaxlength(string $param, $value)
     {
-        if(self::getInstance()->toNext($param, $value)){
+        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
 
             $realval = (is_array(self::getInstance()->data($param))) ? self::getInstance()->data($param) : [self::getInstance()->data($param)];
 
@@ -108,7 +104,7 @@ Trait Check
 
     protected function checkType(string $param, $value)
     {
-        if(self::getInstance()->toNext($param, $value)){
+        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
 
             switch ($value) {
                 case 'date':
@@ -124,8 +120,8 @@ Trait Check
 
     protected function checkFilter(string $param, $value)
     {
-        if(self::getInstance()->toNext($param, $value)){
-
+        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
+            
             if(!filter_var(self::getInstance()->data($param), $value)){
                 self::getInstance()->error([
                     $param => 'não passou pela filtragem de dados'
