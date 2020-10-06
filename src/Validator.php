@@ -2,133 +2,164 @@
 
 namespace HnrAzevedo\Validator;
 
-Trait Check
+use HnrAzevedo\Validator\Rules;
+use Psr\Http\Server\MiddlewareInterface;
+
+Class Validator implements MiddlewareInterface
 {
-    use ExtraCheck,
+    use Check,
+        ExtraCheck,
+        MiddlewareTrait,
         Helper;
 
-    protected function checkMinlength(string $param, $value): void
-    {
-        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){ 
-            
-            $realval = (is_array(self::getInstance()->data($param))) ? self::getInstance()->data($param) : [self::getInstance()->data($param)];
+    private string $namespace = '';
+    private array $defaultData = [
+        'REQUEST_METHOD',
+        'PROVIDER',
+        'ROLE'
+    ];
 
-            foreach($realval as $val){
-                if(strlen($val) === 0) {
-                    self::getInstance()->error([
-                        $param => ' é obrigatório'
-                    ]);
-                    continue;
-                }
-                if($value > strlen($val)) {
-                    self::getInstance()->error([
-                        $param => 'não atingiu o mínimo de caracteres esperado'
-                    ]);
-                }
-            }
-        }       
+    public static function add(object $model, \Closure $return): void
+    {
+        self::getInstance()->model = get_class($model);
+        self::getInstance()->validator(self::getInstance()->model, $return(new Rules($model)));
     }
 
-    protected function checkRegex(string $param, $value): void
+    private static function getClass(string $class)
     {
-        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
+        if(!class_exists($class)){
+            throw new \RuntimeException("Form ID {$class} inválido");
+        }
 
-            $realval = (is_array(self::getInstance()->data($param))) ? self::getInstance()->data($param) : [self::getInstance()->data($param)];
+        $class = get_class(new $class());
 
-            foreach($realval as $val){
-                if(!preg_match(self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data('ROLE'))[$param]['regex'], $val)){
-                    self::getInstance()->error([
-                        $param => 'inválido(a)'
-                    ]);
-                }  
-            }
-        }       
+        return $class;
     }
 
-    protected function checkMincount(string $param, $value): void
+    private function existRole($rules)
     {
-        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
-            $array = self::getInstance()->testArray($param, self::getInstance()->data($param));
-            if(count($array) < $value){
-                self::getInstance()->error([
-                    $param => 'não atingiu o mínimo esperado'
-                ]);
-            }
+        if(empty(self::getInstance()->validator($rules)->getRules(self::getInstance()->data['ROLE']))){
+            throw new \RuntimeException('Não existe regras para validar este formulário');
         }
     }
 
-    protected function checkMaxcount(string $param, $value): void
+    public function checkDatas(array $data): void
     {
-        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
-            $array = self::getInstance()->testArray($param, self::getInstance()->data($param));
-            if(count($array) > $value){
-                self::getInstance()->error([
-                    $param => 'ultrapassou o esperado'
-                ]);
-            }
+        if(!isset($data['PROVIDER']) || !isset($data['ROLE'])){
+            throw new \RuntimeException('The server did not receive the information needed to retrieve the requested validator');
         }
     }
 
-    protected function checkEquals(string $param, $value): void
+    public static function execute(array $data): bool
     {
-        if(!array_key_exists($param, self::getInstance()->data())){
-            self::getInstance()->error([
-                $param => "O servidor não encontrou a informação '{$value}' para ser comparada"
-            ]);
-        }
-            
-        if(self::getInstance()->data($param) != self::getInstance()->data($value)){
-            self::getInstance()->error([
-                $param => 'está diferente de '.ucfirst($value)
-            ]);
-        } 
-    }
+        try{
+            self::getInstance()->checkDatas($data);
 
-    protected function checkMaxlength(string $param, $value)
-    {
-        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
+            self::getInstance()->data = $data;
 
-            $realval = (is_array(self::getInstance()->data($param))) ? self::getInstance()->data($param) : [self::getInstance()->data($param)];
+            $model = self::getInstance()->namespace.'\\'.ucfirst(self::getInstance()->data['PROVIDER']);
+                
+            self::getInstance()->model = self::getInstance()->getClass($model);
 
-            foreach($realval as $val){
-
-                if($value < strlen($val)) {
-                    self::getInstance()->error([
-                        $param => 'ultrapassou o máximo de caracteres esperado'
-                    ]);
+            self::getInstance()->existRole(self::getInstance()->model);
+                
+            foreach ( (self::getInstance()->validator(self::getInstance()->model)->getRules($data['ROLE'])) as $key => $value) {
+                if(@$value['required'] === true){
+                    self::getInstance()->required[$key] = $value;
                 }
+            }
+
+            self::getInstance()->errors = [];
         
-            }
-        }       
+            self::getInstance()->validate();
+            self::getInstance()->checkRequireds();
+        }catch(\Exception $er){
+            self::getInstance()->errors[] = $er->getMessage();
+        }
+        
+		return self::checkErrors();
     }
 
-    protected function checkType(string $param, $value)
+    public static function checkErrors(): bool
     {
-        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
-
-            switch ($value) {
-                case 'date':
-                    if(!self::getInstance()->validateDate(self::getInstance()->data($param) , 'd/m/Y')){
-                        self::getInstance()->error([
-                            $param => 'não é uma data válida'
-                        ]);
-                    }
-                    break;
-            }
-        }       
+        return (count(self::getInstance()->errors) === 0);
     }
-
-    protected function checkFilter(string $param, $value)
+    
+    public function validate(): void
     {
-        if(self::getInstance()->toNext($param, self::getInstance()->data($param))){
-            
-            if(!filter_var(self::getInstance()->data($param), $value)){
-                self::getInstance()->error([
-                    $param => 'não passou pela filtragem de dados'
-                ]);
-            }
+        foreach ( (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['ROLE'])) as $key => $value) {
 
+			foreach (self::getInstance()->data as $keyy => $valuee) {
+
+				self::getInstance()->checkExpected($keyy);
+
+				if($keyy===$key){
+
+                    unset(self::getInstance()->required[$key]);
+
+					foreach ($value as $subkey => $subvalue) {
+                        $function = "check".ucfirst($subkey);
+                        self::getInstance()->testMethod($function);
+                        self::getInstance()->$function($keyy, $subvalue);
+					}
+				}
+			}
         }
     }
 
+    private function checkExpected(string $keyy): void
+    {
+        if(!array_key_exists($keyy, (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['ROLE'])) ) && !in_array($keyy, self::getInstance()->defaultData)){
+            throw new \RuntimeException("O campo '{$keyy}' não é esperado para está operação");
+        }
+    }
+
+    public static function getErrors(): array
+    {
+        return self::getInstance()->errors;
+    }
+
+    public function testMethod($method): void
+    {
+        if(!method_exists(static::class, $method)){
+            throw new \RuntimeException("{$method} não é uma validação válida");
+        }
+    }
+
+    public static function toJson(array $request): string
+    { 
+        $response = null;
+
+        self::getInstance()->checkDatas($request);
+
+        self::getInstance()->data['PROVIDER'] = $request['PROVIDER'];
+        self::getInstance()->data['ROLE'] = $request['ROLE'];
+
+        $model = self::getInstance()->namespace.'\\'.ucfirst($request['PROVIDER']);
+
+        self::getInstance()->model(self::getClass($model));
+
+        self::getInstance()->existRole(self::getInstance()->model());
+
+		foreach ( self::getInstance()->validator(self::getInstance()->model())->getRules($request['ROLE'])  as $field => $r) {
+            $r = self::getInstance()->replaceRegex($r);
+            $response .= ("{$field}:".json_encode(array_reverse($r))).',';
+        }
+
+        return '{'.substr($response,0,-1).'}';
+    }
+    
+    private function replaceRegex(array $rules): array
+    {
+        if(array_key_exists('regex', $rules)){ 
+            $rules['regex'] = substr($rules['regex'], 1, -2);
+        }
+        return $rules;
+    }
+
+    public static function namespace(string $namespace): Validator
+    {
+        self::getInstance()->namespace = $namespace;
+        return self::getInstance();
+    }
 }
