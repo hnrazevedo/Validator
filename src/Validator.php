@@ -143,7 +143,7 @@ Class Validator implements MiddlewareInterface
 
 		foreach ( self::getInstance()->validator(self::getInstance()->model())->getRules($request['ROLE'])  as $field => $r) {
             $r = self::getInstance()->replaceRegex($r);
-            $response .= ("{$field}:".json_encode(array_reverse($r))).',';
+            $response .= ("'$field':".json_encode(array_reverse($r))).',';
         }
 
         return '{'.substr($response,0,-1).'}';
