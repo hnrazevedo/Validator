@@ -7,17 +7,20 @@ use HnrAzevedo\Validator\Validator;
 try{
 
     /* Checks whether the passed data is valid for the selected function */
-    $valid = Validator::namespace('HnrAzevedo\\Validator\\Example\\Rules')->execute($data);
+    $valid = Validator::namespace('HnrAzevedo\\Validator\\Example\\Rules')->lang('pt_br')->execute($data);
     
     $errors = [];
 
     if(!$valid){
         foreach(Validator::getErrors() as $err => $message){
+            
             $errors[] = [
-                'input' => array_keys($message)[0],                 // Return name input error
-                'message' => $message[array_keys($message)[0]]      // Return message error
+                'input' => $err,                 // Return name input error
+                'message' => $message            // Return message error
             ];
         }
+
+        var_dump($errors);
     }
 
     /* Transforms validation to Json format to be validated on the client if desired */

@@ -4,8 +4,9 @@ namespace HnrAzevedo\Validator;
 
 Class Rules
 {
+    use Helper;
+
     private string $action;
-    protected static array $errors = [];
 
     private array $form = array();
 
@@ -14,27 +15,26 @@ Class Rules
 	    $this->form['model'] = ucfirst(get_class($model));
 	}
 
-    public function setAction(string $action): Rules
+    public function action(string $action): Rules
     {
 	    $this->action = $action;
 	    return $this;
 	}
 
-    public function addField(string $field, array $test): Rules
+    public function field(string $field, array $test, ?string $placeholder = null): Rules
     {
 	    if(empty($this->action)){
-            self::$errors[] = "Form action not registered.";
+            self::$errors[] = self::$err['nFoundForm'];
+            return $this;
         }
 
-	    if(empty($this->form[$this->action][$field])){
-            $this->form[$this->action][$field] = $test;
-        }
-
+        $this->form[$this->action][$field] = $test;
+        $this->form[$this->action][$field]['placeholder'] = (null !== $placeholder) ? $placeholder : $test;
 	    return $this;
   	}
 
-    public function getRules(string $action): ?array
+    public function getRules(string $action): Array
     {
-		return (array_key_exists($action, $this->form)) ? $this->form[$action] : null;
+		return (array_key_exists($action, $this->form)) ? $this->form[$action] : [];
 	}
 }

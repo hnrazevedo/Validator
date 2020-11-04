@@ -10,16 +10,25 @@ trait Helper
     protected string $model = '';
     protected array $required = [];
     protected array $errors = [];
-    
-    private static function getInstance(): Validator
+    protected static string $lang = 'en';
+    protected static array $err = [];
+
+
+    protected static function array($value): Array
     {
+        return (is_array($value)) ? $value : [ $value ];
+    }
+
+    protected static function getInstance(?string $lang = null): Validator
+    {
+        self::$lang = (null !== $lang) ? $lang : 'en';
         self::$instance = (isset(self::$instance)) ? self::$instance : new Validator();
         return self::$instance;
     }
 
-    protected function error($error): void
+    protected function error(array $error): void
     {
-        $this->errors[] = $error;
+        $this->errors = array_merge($this->errors, $error);
     }
 
     protected function data($field = null, ?array $values = null)

@@ -6,12 +6,10 @@ Trait ExtraCheck
 {
     use Helper;
     
-    protected function checkRequireds(): void
+    protected function requireds(): void
     {
         if(count(self::getInstance()->required()) > 0){
-            self::getInstance()->error([
-                'As seguintes informações não poderam ser validadas: '.implode(', ',array_keys(self::getInstance()->required()))
-            ]);
+            self::getInstance()->error([ self::$err['needed'].implode(', ', array_keys(self::getInstance()->required())) ]);
         }
     }
 
@@ -21,27 +19,15 @@ Trait ExtraCheck
         return $d && $d->format($format) == $date;
     }
 
-    protected function checkRequired(string $param): bool
+    protected function isRequired(string $param): bool
     {
-        return (array_key_exists(
-            'required',
-            self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data('ROLE'))[$param]) 
-        && self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data('ROLE'))[$param]['required']);
+        return (array_key_exists('required', self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data('_ROLE'))[$param]) 
+        && self::getInstance()->validator(self::getInstance()->model())->getRules(self::getInstance()->data('_ROLE'))[$param]['required']);
     }
 
-    protected function toNext(string $param, $value): bool
+    protected function valid(string $param, $value): bool
     {
-        return (self::getInstance()->checkRequired($param) || strlen($value > 0));
+        return (self::getInstance()->isRequired($param) || strlen($value > 0));
     }
 
-    protected function testArray(string $param, $value): ?array
-    {
-        if(!is_array($value)){
-            self::getInstance()->error([
-                $param => 'Era esperado uma informação em formato array para está informação'
-            ]);
-            return [];
-        }
-        return $value;
-    }
 }
