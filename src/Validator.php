@@ -29,7 +29,7 @@ Class Validator implements MiddlewareInterface
 
     private string $namespace = '';
     private array $defaultData = [
-        '_METHOD',
+        'REQUEST_METHOD',
         '_PROVIDER',
         '_ROLE'
     ];
