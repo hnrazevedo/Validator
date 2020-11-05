@@ -7,12 +7,11 @@ Class Rules
     use Helper;
 
     private string $action;
-
     private array $form = array();
 
-    public function __construct(object $model)
+    public function __construct(string $model)
     {
-	    $this->form['model'] = ucfirst(get_class($model));
+	    $this->form['model'] = ucfirst($model);
 	}
 
     public function action(string $action): Rules
@@ -24,12 +23,12 @@ Class Rules
     public function field(string $field, array $test, ?string $placeholder = null): Rules
     {
 	    if(empty($this->action)){
-            self::$errors[] = self::$err['nFoundForm'];
+            $this->error([ 'form' => self::$err['nFoundForm'] ]);
             return $this;
         }
 
         $this->form[$this->action][$field] = $test;
-        $this->form[$this->action][$field]['placeholder'] = (null !== $placeholder) ? $placeholder : $test;
+        $this->form[$this->action][$field]['placeholder'] = (null !== $placeholder) ? $placeholder : $field;
 	    return $this;
   	}
 

@@ -25,7 +25,7 @@ O Validator é um simples componente de validação de dados. Ele pode ser usado
 Validator is available via Composer:
 
 ```bash 
-"hnrazevedo/validator": "^2.0"
+"hnrazevedo/validator": "^2.1"
 ```
 
 or in at terminal
@@ -37,7 +37,6 @@ composer require hnrazevedo/validator
 ## Documentation
 
 ##### For details on how to use the Validator, see the sample folder with details in the component directory
-
 Para mais detalhes sobre como usar o Validator, veja a pasta de exemplos com detalhes no diretório do componente
 
 ### Validation rules
@@ -54,15 +53,22 @@ Para mais detalhes sobre como usar o Validator, veja a pasta de exemplos com det
 - filter: integer - See https://www.php.net/manual/en/filter.filters.validate.php for more details of the available filters 
 - regex: string
 
+### Languages
+
+#### The system has been configured to support multiple languages, so make sure the desired language is in the languages folder and define it with the lang method before any procedure
+O sistema foi configurado para suportar vários idiomas, então verifique se o idioma desejado se encontra na pasta languages e defina-o com o método lang antes de qualquer procedimento
+
+```php
+$valid = Validator::lang('pt_br')->namespace('App\\Rules')->execute($data);
+```
+
 ## NOTE
 
 #### In case the field is an array, the rules will be tested in all its elements.
-
 Em caso do campo ser um array, as regras serão testadas em todos seus elementos.
 
-#### The validation rules must be removed when constructing the extended HnrAzevedor\Validator object
-
-As regras de validação devem ser retiradas na construção do objeto extendido de HnrAzevedor\Validator
+#### The validation rules must be defined in the construction of the class object with the namespace denified in the Validator
+As regras de validação devem ser definidas na construção do objeto da classe com o namespace denifida no Validator
 
 ```php
 namespace App\Rules;
@@ -75,13 +81,18 @@ Class User{
     public function __construct()
     {
         Validator::add($this, function(Rules $rules){
-            $rules->setAction('login')
-                  ->addField('email',['minlength'=>1,'filter'=>FILTER_VALIDATE_EMAIL,'required'=>true])
-                  ->addField('password',['minlength'=>6,'maxlength'=>20,'required'=>true])
-                  ->addField('password2',['equals'=>'password','required'=>true])
-                  ->addField('remember',['minlength'=>2,'maxlength'=>2,'required'=>false])
-                  ->addField('birth',['type'=>'date','required'=>true])
-                  ->addField('phones',['mincount'=>2,'maxcount'=>3,'required'=>true,'minlength'=>8,'maxlength'=>9]);
+            $rules->action('login')
+                  /*
+                   * @property string $inputName
+                   * @property array $rules
+                   * @property string $textPlaceholder
+                  */
+                  ->field('email',['minlength'=>1,'filter'=>FILTER_VALIDATE_EMAIL,'required'=>true],'Email address')
+                  ->field('password',['minlength'=>6,'maxlength'=>20,'required'=>true],'Password')
+                  ->field('password2',['equals'=>'password','required'=>true],'Confirm password')
+                  ->field('remember',['minlength'=>2,'maxlength'=>2,'required'=>false])
+                  ->field('birth',['type'=>'date','required'=>true],'Date of birth')
+                  ->field('phones',['mincount'=>2,'maxcount'=>3,'required'=>true,'minlength'=>8,'maxlength'=>9]);
             return $rules;
         });
         return $this;
@@ -112,13 +123,11 @@ $data = [
 ### Defining namespace
 
 #### To use dynamically to avoid the need to place the entire namespace of a class with rules, you must define the namespace before performing data validation
-
 Para utilização de forma dinamica para evitar a necessidade de colocar o namespace inteiro de uma class com regras, deve-se definir o namespace antes de executar a validação dos dados
 
 ### Check data
 
 #### Validation errors are returned in an error array, in case there are more than one occurrence, they can be displayed at the same time
-
 Os erros de validação são retornados em uma matriz de erro, caso haja mais de uma ocorrência, eles podem ser exibidos ao mesmo tempo
 
 ```php
@@ -138,7 +147,6 @@ if(!$valid){
 ### toJson
 
 #### Returns a readable Json for validation to be performed on the client side
-
 Retorna um Json legível para validação a ser realizada no lado do cliente
 
 ```php
@@ -160,7 +168,6 @@ $json = Validator::namespace('App\\Rules')->toJson($data);
 ## Support
 
 ##### Security: If you discover any security related issues, please email hnr.azevedo@gmail.com instead of using the issue tracker.
-
 Se você descobrir algum problema relacionado à segurança, envie um e-mail para hnr.azevedo@gmail.com em vez de usar o rastreador de problemas.
 
 ## Credits

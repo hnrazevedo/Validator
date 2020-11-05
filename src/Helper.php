@@ -10,7 +10,6 @@ trait Helper
     protected string $model = '';
     protected array $required = [];
     protected array $errors = [];
-    protected static string $lang = 'en';
     protected static array $err = [];
 
 
@@ -21,14 +20,13 @@ trait Helper
 
     protected static function getInstance(?string $lang = null): Validator
     {
-        self::$lang = (null !== $lang) ? $lang : 'en';
-        self::$instance = (isset(self::$instance)) ? self::$instance : new Validator();
+        self::$instance = (isset(self::$instance)) ? self::$instance : new Validator($lang);
         return self::$instance;
     }
 
     protected function error(array $error): void
     {
-        $this->errors = array_merge($this->errors, $error);
+        $this->errors[] = $error;
     }
 
     protected function data($field = null, ?array $values = null)

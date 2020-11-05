@@ -12,8 +12,10 @@ trait MiddlewareTrait{
     {
         $data = ($request->getAttribute('validator') !== null && isset($request->getAttribute('validator')['data'])) ? $request->getAttribute('validator')['data'] : $_REQUEST;
         $namespace = ($request->getAttribute('validator') !== null && isset($request->getAttribute('validator')['namespace'])) ? $request->getAttribute('validator')['namespace'] : '';
+        $lang = ($request->getAttribute('validator') !== null && isset($request->getAttribute('validator')['lang'])) ? $request->getAttribute('validator')['lang'] : 'en';
+        
         return $handler->handle($request->withAttribute('validator', [
-            'valid' => self::namespace($namespace)->execute($data),
+            'valid' => self::lang($lang)->namespace($namespace)->execute($data),
             'errors' => self::getErrors()
         ]));
     }

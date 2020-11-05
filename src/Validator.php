@@ -2,7 +2,7 @@
 
 namespace HnrAzevedo\Validator;
 
-use HnrAzevedo\Validator\getRules;
+use HnrAzevedo\Validator\Rules;
 use Psr\Http\Server\MiddlewareInterface;
 
 Class Validator implements MiddlewareInterface
@@ -12,14 +12,18 @@ Class Validator implements MiddlewareInterface
         MiddlewareTrait,
         Helper;
 
-    public function __construct()
+    public function __construct(?string $lang = null)
     {
-        require __DIR__.DIRECTORY_SEPARATOR.'languages'. DIRECTORY_SEPARATOR . self::$lang .'.php';
+        $lang = (null !== $lang) ? $lang : 'en';
+        require __DIR__.DIRECTORY_SEPARATOR.'languages'. DIRECTORY_SEPARATOR . $lang .'.php';
         self::$err = $VALIDATOR_LANG;
     }
 
     public static function lang(string $lang): Validator
     {
+        unset($VALIDATOR_LANG);
+        require __DIR__.DIRECTORY_SEPARATOR.'languages'. DIRECTORY_SEPARATOR . $lang .'.php';
+        self::$err = $VALIDATOR_LANG;
         return self::getInstance($lang);
     }
 
@@ -32,14 +36,14 @@ Class Validator implements MiddlewareInterface
 
     public static function add(object $model, \Closure $return): void
     {
-        self::getInstance()->model = get_class($model);
-        self::getInstance()->validator(self::getInstance()->model, $return(new Rules($model)));
+        self::getInstance()->model(get_class($model));
+        self::getInstance()->validator(self::getInstance()->model, $return(new Rules(get_class($model))));
     }
 
     private static function getClass(string $class)
     {
         if(!class_exists($class)){
-            throw new \RuntimeException("Form ID {$class} inválido");
+            throw new \RuntimeException(self::$err['nFormID']);
         }
 
         $class = get_class(new $class());
@@ -50,14 +54,14 @@ Class Validator implements MiddlewareInterface
     private function existRole($getRules)
     {
         if(empty(self::getInstance()->validator($getRules)->getRules(self::getInstance()->data['_ROLE']))){
-            throw new \RuntimeException('Não existe regras para validar este formulário');
+            throw new \RuntimeException(self::$err['nFoundForm']);
         }
     }
 
     public function checkDatas(array $data): void
     {
         if(!isset($data['_PROVIDER']) || !isset($data['_ROLE'])){
-            throw new \RuntimeException('The server did not receive the information needed to retrieve the requested validator');
+            throw new \RuntimeException(self::$err['issetData']);
         }
     }
 
@@ -85,7 +89,7 @@ Class Validator implements MiddlewareInterface
             self::getInstance()->validate();
             self::getInstance()->requireds();
         }catch(\Exception $er){
-            self::getInstance()->errors[] = $er->getMessage();
+            self::getInstance()->errors[] = ['form' => $er->getMessage()];
         }
         
 		return self::errors();
@@ -104,17 +108,19 @@ Class Validator implements MiddlewareInterface
 
 				self::getInstance()->checkExpected($keyy);
 
-				if($keyy===$key){
+				if($keyy!==$key){
+                    continue;
+                }
 
-                    unset(self::getInstance()->required[$key]);
+                unset(self::getInstance()->required[$key]);
 
-					foreach ($value as $subkey => $subvalue) {
+				foreach ($value as $subkey => $subvalue) {
 
-                        $function = strtolower($subkey);
+                    $function = strtolower($subkey);
 
-                        self::getInstance()->hasMethod($function)->$function($keyy, $subvalue);
-					}
-				}
+                    self::getInstance()->hasMethod($function)->$function($keyy, $subvalue, (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['_ROLE'])) );
+                }
+				
 			}
         }
     }
@@ -160,7 +166,7 @@ Class Validator implements MiddlewareInterface
             $response .= ("'$field':".json_encode(array_reverse($r))).',';
         }
 
-        return '{'.substr($response,0,-1).'}';
+        return '{'.substr($response, 0, -1).'}';
     }
     
     private function replaceRegex(array $getRules): array

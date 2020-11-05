@@ -3,6 +3,7 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use HnrAzevedo\Http\Factory;
+use HnrAzevedo\Http\Response;
 use HnrAzevedo\Http\Uri;
 use HnrAzevedo\Validator\Validator;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -14,19 +15,27 @@ try{
     $serverRequest = (new Factory())->createServerRequest('GET', new Uri('/'));
     $serverRequest = $serverRequest->withAttribute('validator',[
         'namespace' => 'HnrAzevedo\\Validator\\Example\\Rules',
-        'data' => $data
+        'data' => $data,
+        'lang' => 'pt_br'
     ]);
 
     class App implements MiddlewareInterface{
         public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
         {
             if(!$request->getAttribute('validator')['valid']){
-                $err = '';
-                foreach($request->getAttribute('validator')['errors'] as $er => $error){
-                    $err .= (is_array($error)) ? implode('',array_keys($error)) . ' ' . implode('', array_values($error)) : $error;
-                    $err .= ', ';
+                
+                $errors = [];
+
+                foreach($request->getAttribute('validator')['errors'] as $error){
+                    $errors[] = [
+                        'input' => array_keys($error)[0],                 // Return name input error
+                        'message' => array_values($error)[0]            // Return message error
+                    ];
                 }
-                throw new \Exception(substr($err, 0, -2));
+            
+                var_dump($errors);
+
+                return new Response(403);
             }
 
             return $handler->handle($request);

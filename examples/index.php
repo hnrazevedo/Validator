@@ -2,16 +2,16 @@
 
 /* Required format for validation */
 $data = [
-    'email'=> 'hnr.azevedo@gmail.com',
-    'password' => '123456',
-    'password2' => '1234567777777777777777777777777777777777777777777',
-    'phones' => [
+    'field_email'=> 'hnr.azevedo@gmail.com',
+    'field_password' => '123456',
+    'field_password2' => '1234567',
+    'field_phones' => [
         '949164770','949164771','949164772'
     ],
-    'birth' => '28/09/1996',
+    'field_birth' => '28/09/1996',
     '_PROVIDER' => 'user',
     '_ROLE' => 'login'
 ];
 
 require "DefaultUseExample.php";
-//require "MiddlewareUseExample.php";
+require "MiddlewareUseExample.php";
