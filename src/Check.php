@@ -112,7 +112,7 @@ Trait Check
             return;
         }
             
-        if(!filter_var(self::getInstance()->data($param), $value)){
+        if(!filter_var(self::getInstance()->data($param), intval($value))){
             self::getInstance()->error([ $param => $rules[$param]['placeholder'] . self::$err['filter'] ]);
         }
         

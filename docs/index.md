@@ -165,6 +165,24 @@ $json = Validator::namespace('App\\Rules')->toJson($data);
  */
 ```
 
+### Middleware
+
+#### To use HnrAzevedo\Validator as middleware, it is necessary to define the following information in ServerRequest
+Para utilizar o HnrAzevedo\Validator como middleware, é necessário definir as seguintes informações na ServerRequest
+
+```php
+/*
+ * @property string $namespace
+ * @property array $data
+ * @property string $language
+ */
+$serverRequest = $serverRequest->withAttribute('validator',[
+    'namespace' => 'HnrAzevedo\\Validator\\Example\\Rules',
+    'data' => $data,
+    'lang' => 'pt_br'
+]);
+```
+
 ## Support
 
 ##### Security: If you discover any security related issues, please email hnr.azevedo@gmail.com instead of using the issue tracker.

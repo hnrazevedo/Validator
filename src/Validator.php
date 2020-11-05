@@ -16,14 +16,14 @@ Class Validator implements MiddlewareInterface
     {
         $lang = (null !== $lang) ? $lang : 'en';
         require __DIR__.DIRECTORY_SEPARATOR.'languages'. DIRECTORY_SEPARATOR . $lang .'.php';
-        self::$err = (isset($VALIDATOR_LANG)) ? $VALIDATOR_LANG : [];
+        self::$err = $VALIDATOR_LANG;
     }
 
     public static function lang(string $lang): Validator
     {
         unset($VALIDATOR_LANG);
         require __DIR__.DIRECTORY_SEPARATOR.'languages'. DIRECTORY_SEPARATOR . $lang .'.php';
-        self::$err = (isset($VALIDATOR_LANG)) ? $VALIDATOR_LANG : [];
+        self::$err = $VALIDATOR_LANG;
         return self::getInstance($lang);
     }
 
