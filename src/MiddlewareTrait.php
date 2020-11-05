@@ -23,12 +23,12 @@ trait MiddlewareTrait{
         return ($request->getAttribute('validator') !== null && isset($request->getAttribute('validator')['data'])) ? $request->getAttribute('validator')['data'] : $_REQUEST;
     }
 
-    private function requestNamespace(ServerRequestInterface $request): array
+    private function requestNamespace(ServerRequestInterface $request): string
     {
         return ($request->getAttribute('validator') !== null && isset($request->getAttribute('validator')['namespace'])) ? $request->getAttribute('validator')['namespace'] : '';
     }
 
-    private function requestLang(ServerRequestInterface $request): array
+    private function requestLang(ServerRequestInterface $request): string
     {
         return ($request->getAttribute('validator') !== null && isset($request->getAttribute('validator')['lang'])) ? $request->getAttribute('validator')['lang'] : 'en';
     }

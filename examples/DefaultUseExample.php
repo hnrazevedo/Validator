@@ -20,8 +20,6 @@ try{
         }
     }
 
-    var_dump($errors);
-
     /* Transforms validation to Json format to be validated on the client if desired */
     $json = Validator::namespace('HnrAzevedo\\Validator\\Example\\Rules')->toJson($data);
 

@@ -32,9 +32,7 @@ try{
                         'message' => array_values($error)[0]            // Return message error
                     ];
                 }
-            
-                var_dump($errors);
-
+        
                 return new Response(403);
             }
 
