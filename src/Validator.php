@@ -106,11 +106,12 @@ Class Validator implements MiddlewareInterface
 
 			foreach (self::getInstance()->data as $keyy => $valuee) {
 
-				self::getInstance()->checkExpected($keyy);
-
-				if($keyy!==$key){
+                if($keyy!==$key){
                     continue;
                 }
+
+                self::getInstance()->checkExpected($keyy);
+                self::getInstance()->checkExpectedArray($keyy);
 
                 unset(self::getInstance()->required[$key]);
 
@@ -128,6 +129,13 @@ Class Validator implements MiddlewareInterface
     private function checkExpected(string $keyy): void
     {
         if(!array_key_exists($keyy, (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['_ROLE'])) ) && !in_array($keyy, self::getInstance()->defaultData)){
+            throw new \RuntimeException($keyy . self::$err['nExpected']);
+        }
+    }
+
+    private function checkExpectedArray(string $keyy): void
+    {
+        if(!array_key_exists($keyy.'[]', (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['_ROLE'])) ) && !in_array($keyy.'[]', self::getInstance()->defaultData)){
             throw new \RuntimeException($keyy . self::$err['nExpected']);
         }
     }
