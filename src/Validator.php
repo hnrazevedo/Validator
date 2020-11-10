@@ -111,7 +111,6 @@ Class Validator implements MiddlewareInterface
                 }
 
                 self::getInstance()->checkExpected($keyy);
-                self::getInstance()->checkExpectedArray($keyy);
 
                 unset(self::getInstance()->required[$key]);
 
@@ -129,15 +128,15 @@ Class Validator implements MiddlewareInterface
     private function checkExpected(string $keyy): void
     {
         if(!array_key_exists($keyy, (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['_ROLE'])) ) && !in_array($keyy, self::getInstance()->defaultData)){
-            throw new \RuntimeException($keyy . self::$err['nExpected']);
+            if(!$this->checkExpectedArray($keyy)){
+                throw new \RuntimeException($keyy . self::$err['nExpected']);
+            }
         }
     }
 
-    private function checkExpectedArray(string $keyy): void
+    private function checkExpectedArray(string $keyy): bool
     {
-        if(!array_key_exists($keyy.'[]', (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['_ROLE'])) ) && !in_array($keyy.'[]', self::getInstance()->defaultData)){
-            throw new \RuntimeException($keyy . self::$err['nExpected']);
-        }
+        return (!array_key_exists($keyy.'[]', (self::getInstance()->validator(self::getInstance()->model)->getRules(self::getInstance()->data['_ROLE'])) ) && !in_array($keyy.'[]', self::getInstance()->defaultData));
     }
 
     public static function getErrors(): array
